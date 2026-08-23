@@ -23,6 +23,8 @@ def add_time_features(df):
 
     df["transaction_hour"] = (df["TransactionDT"] % 86400) // 3600
 
+    return df
+
 def create_engineered_features(df):
     result = df[extended_features].copy()
 
