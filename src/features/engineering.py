@@ -28,7 +28,7 @@ def add_time_features(df):
 def create_engineered_features(df):
     result = df[extended_features].copy()
 
-    result = add_missing_features(result)
+    result = add_missing_features(df)
     result = add_time_features(result)
 
     return result
