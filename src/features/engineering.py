@@ -6,9 +6,11 @@ extended_features = base_features + ["card1", "card2", "card4", "card6", "addr1"
 symbols = ['V', 'D', 'M', 'C', 'id', "card", "addr", "dist"]
 def add_missing_features(df):
 
-    df= df.copy()
+    df_copy = df.copy()
 
-    df['missing_count'] = df.isna().sum(axis=1)
+    avail_cols = [c for c in df_copy.columns if c != 'isFraud']
+
+    df_copy['missing_count'] = df_copy[avail_cols].isna().sum(axis=1)
 
     for i in symbols:
         df[f'missing_{i}_count'] = df.filter(regex = f"^{i}").isna().sum(axis=1)
@@ -53,7 +55,12 @@ def create_d_time_features(df):
 
     return df
 
-top_10_emails = ['servicios-ta.com',
+top_15_emails = ['protonmail.com',
+ 'hotmail.de',
+ 'aim.com',
+ 'yahoo.co.jp',
+ 'ptd.net',
+ 'servicios-ta.com',
  'twc.com',
  'q.com',
  'suddenlink.net',
@@ -92,6 +99,6 @@ def create_d_features(df):
     df = create_engineered_features(df)
     df = add_amount_features(df)
     df = create_d_time_features(df)
-    df = add_email_features(df, top_10_emails)
+    df = add_email_features(df, top_15_emails)
     df = add_combined_features(df)
     return df
