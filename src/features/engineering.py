@@ -93,6 +93,20 @@ def add_combined_features(df):
     df["card_product"] = df["card4"].astype(str) + "_" + df["ProductCD"].astype(str)
     df["email_product"] = df["P_emaildomain"].astype(str) + "_" + df["ProductCD"].astype(str)
     df["card_addr"] = df["card1"].astype(str) + "_" + df["addr1"].astype(str)
+
+    df["uid"] = (df["card1"].astype(str) + "_" + df["card2"].astype(str) + "_" + df["card5"].astype(str) + "_" + df["addr1"].astype(str) + "_" + df["D1"].astype(str))
+
+    return df
+
+def add_group_aggregations(df):
+    df = df.copy()
+
+    uid_mean = df.groupby("uid")['TransactionAmt'].transform("mean")
+    uid_std = df.groupby("uid")['TransactionAmt'].transform("std")
+
+    df['TransactionAmt_to_mean_uid'] = df['TransactionAmt'] / (uid_mean + 1e-5)
+    df['TransactionAmt_to_std_uid'] = (df['TransactionAmt'] - uid_mean) / (uid_std + 1e-5)
+
     return df
 
 def create_d_features(df):
@@ -101,4 +115,8 @@ def create_d_features(df):
     df = create_d_time_features(df)
     df = add_email_features(df, top_15_emails)
     df = add_combined_features(df)
+    df = add_group_aggregations(df)
+
+    if "uid" in df.columns.tolist():
+        df = df.drop(columns=["uid"])
     return df
