@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 
 base_features = ['TransactionDT', "TransactionAmt", "ProductCD", "P_emaildomain", "R_emaildomain"]
-extended_features = base_features + ["card1", "card2", "card4", "card6", "addr1", "addr2", "dist1", "dist2"]
+extended_features = base_features + ["card1", "card2", "card4", "card5", "card6", "addr1", "addr2", "dist1", "dist2", "D1"]
 symbols = ['V', 'D', 'M', 'C', 'id', "card", "addr", "dist"]
 def add_missing_features(df):
 
@@ -13,9 +13,9 @@ def add_missing_features(df):
     df_copy['missing_count'] = df_copy[avail_cols].isna().sum(axis=1)
 
     for i in symbols:
-        df[f'missing_{i}_count'] = df.filter(regex = f"^{i}").isna().sum(axis=1)
+        df_copy[f'missing_{i}_count'] = df_copy.filter(regex = f"^{i}").isna().sum(axis=1)
 
-    return df
+    return df_copy
 
 def add_time_features(df):
 
