@@ -53,16 +53,16 @@ def create_d_time_features(df):
 
     return df
 
-top_10_emails = ['gmail.com',
-'hotmail.com',
- 'anonymous.com',
- 'yahoo.com',
- 'aol.com',
- 'outlook.com',
- 'comcast.net',
- 'yahoo.com.mx',
- 'icloud.com',
- 'msn.com']
+top_10_emails = ['servicios-ta.com',
+ 'twc.com',
+ 'q.com',
+ 'suddenlink.net',
+ 'cableone.net',
+ 'netzero.com',
+ 'frontiernet.net',
+ 'centurylink.net',
+ 'sc.rr.com',
+ 'netzero.net']
 
 def add_email_features(df, unusual_emails):
     df = df.copy()
