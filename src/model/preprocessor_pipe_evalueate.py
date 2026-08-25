@@ -25,12 +25,11 @@ def get_preprocessor(X):
 
     return preprocessor
 
-def create_pipeline(X):
-    preprocessor = get_preprocessor(X)
+def create_pipeline(model, preprocessor):
 
     pipe = Pipeline([
         ("preprocessor", preprocessor),
-        ("model", LogisticRegression(max_iter=1000, class_weight="balanced", solver="liblinear"))])
+        ("model", model)])
 
     return pipe
 
