@@ -9,3 +9,5 @@ def load_df(data_path):
     identity_df = pd.read_csv(identity_path)
     full_df = transaction_df.merge(identity_df, on="TransactionID", how="left")
     full_df = full_df.sort_values("TransactionDT").reset_index(drop=True)
+
+    return full_df
