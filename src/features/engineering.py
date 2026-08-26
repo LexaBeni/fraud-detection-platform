@@ -121,7 +121,7 @@ def create_d_features(df):
         df = df.drop(columns=["uid"])
     return df
 
-def creat_d_no_aggregations_features(df):
+def create_d_no_aggregations_features(df):
     df = create_engineered_features(df)
     df = add_amount_features(df)
     df = create_d_time_features(df)
