@@ -128,4 +128,7 @@ def create_d_no_aggregations_features(df):
     df = add_email_features(df, top_15_emails)
     df = add_combined_features(df)
 
+    if "uid" in df.columns.tolist():
+            df = df.drop(columns=["uid"])
+            
     return df
