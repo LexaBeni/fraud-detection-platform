@@ -44,6 +44,8 @@ def add_amount_features(df):
 
     df["amount_decimal"] = (df["TransactionAmt"] % 1)
 
+    df["amount_rounded"] = (np.isclose(df["TransactionAmt"] % 1, 0, atol=1e-6) ).astype(int)
+
     return df
 
 def create_d_time_features(df):
@@ -124,5 +126,36 @@ def create_d_aggregations_features(df):
 
     if "uid" in df.columns.tolist():
             df = df.drop(columns=["uid"])
+
+    return df
+
+def create_advanced_time_features(df):
+    df = df.copy()
+
+    df["transaction_weekday"] = df["transaction_day"] % 7
+
+    df["is_weekend"] = (df["transaction_weekday"] >= 5).astype(int)
+
+    df['is_night'] = (df["transaction_hour"] < 6 | df['transaction_hour'] >= 22).astpe(int)
+
+    return df
+
+def add_interaction_features(df):
+    df = df.copy()
+
+    df["card2_product"] = (df["card2"].astype(str) + "_" + df["ProductCD"].astype(str))
+
+    df["card4_card6"] = (df["card4"].astype(str) + "_" + df["card6"].astype(str))
+
+    df["card2_card4"] = (df["card2"].astype(str) + "_" + df["card4"].astype(str))
+
+    return df
+
+def add_distance_features(df):
+    df = df.copy()
+
+    df["dist_diff"] = df["dist1"] - df["dist2"]
+
+    df["dist_sum"] = df["dist1"] + df["dist2"]
 
     return df
