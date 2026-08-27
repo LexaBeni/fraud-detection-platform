@@ -159,3 +159,11 @@ def add_distance_features(df):
     df["dist_sum"] = df["dist1"] + df["dist2"]
 
     return df
+
+def add_all_features(df):
+    df = create_d_features(df)
+    df = add_distance_features(df)
+    df = add_interaction_features(df)
+    df = create_advanced_time_features(df)
+
+    return df
