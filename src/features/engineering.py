@@ -136,7 +136,7 @@ def create_advanced_time_features(df):
 
     df["is_weekend"] = (df["transaction_weekday"] >= 5).astype(int)
 
-    df['is_night'] = ((df["transaction_hour"] < 6) | (df['transaction_hour']) >= 22).astpe(int)
+    df['is_night'] = ((df["transaction_hour"] < 6) | (df['transaction_hour']) >= 22).astype(int)
 
     return df
 
