@@ -154,9 +154,8 @@ def add_interaction_features(df):
 def add_distance_features(df):
     df = df.copy()
 
-    df["dist_diff"] = df["dist1"] - df["dist2"]
-
-    df["dist_sum"] = df["dist1"] + df["dist2"]
+    df["dist1_is_missing"] = df["dist1"].isna().astype("int8")
+    df["dist2_is_missing"] = df["dist2"].isna().astype("int8")
 
     return df
 
