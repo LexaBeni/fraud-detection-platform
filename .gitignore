@@ -228,3 +228,5 @@ data/
 *.db
 
 *catboost_info/
+
+*mlartifacts/
