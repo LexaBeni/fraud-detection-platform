@@ -5,3 +5,14 @@ seaborn
 xgboost
 mlflow
 dotenv
+lightgbm
+catboost
+fastapi==0.139.0
+uvicorn==0.51.0
+pydantic==2.13.4
+pydantic-settings==2.14.2
+email-validator==2.3.0
+SQLAlchemy==2.0.51
+alembic==1.18.5
+PyMySQL==1.2.0
+httpx
