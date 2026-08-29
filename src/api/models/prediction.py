@@ -1,4 +1,4 @@
-from core.database import Base
+from src.api.core.database import Base
 from datetime import datetime
 from sqlalchemy import Integer, String, Float, DateTime
 from sqlalchemy.orm import Mapped, mapped_column
