@@ -230,3 +230,5 @@ data/
 *catboost_info/
 
 *mlartifacts/
+
+*models/
