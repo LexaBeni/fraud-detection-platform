@@ -1,10 +1,21 @@
 import logging
+from pathlib import Path
 
-logger = logging.getLogger(__name__)
-formater = logging.Formatter(fmt="%(asctime)s [%(levelname)s] %(name)s: %(message)s")
-file_handler = logging.FileHandler("app.log")
+PROJECT_ROOT = Path(__file__).resolve().parents[3]
+LOG_FILE = PROJECT_ROOT / "app.log"
+
+logger = logging.getLogger()
+formatter = logging.Formatter(fmt="%(asctime)s [%(levelname)s] %(name)s: %(message)s")
+
+file_handler = logging.FileHandler(LOG_FILE)
+file_handler.setFormatter(formatter)
+
 stream_handler = logging.StreamHandler()
-file_handler.setFormatter(formater)
-stream_handler.setFormatter(formater)
-logger.handlers = [stream_handler, file_handler]
+stream_handler.setFormatter(formatter)
+
+logger.addHandler(file_handler)
+logger.addHandler(stream_handler)
+
 logger.setLevel(logging.INFO)
+
+print(f"[Logger] Logging to: {LOG_FILE}")
