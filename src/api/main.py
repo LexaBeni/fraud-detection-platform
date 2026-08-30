@@ -14,16 +14,8 @@ async def lifespan(app: FastAPI):
     try:
         app.state.model = joblib.load(settings.model_path)
     except Exception as e:
-        print(e)
-        logger.error("Model loading failed")
-    try:
-        Base.metadata.create_all(bind=engine)
-        logger.info("Database is successfully connected.")
-    except Exception as e:
-        print(e)
-        logger.critical("Database connection failed.")
-
-        raise RuntimeError("Database connection failed")
+        logger.exception("Model loading failed")
+        raise RuntimeError("Model loading failed")
 
     yield
 
@@ -33,15 +25,15 @@ app = FastAPI(title="Fraud Detection API", version="1.0.0", lifespan=lifespan)
 
 @app.middleware("http")
 async def middleware(request, call_next):
-    start_time = time.time()
+    start_time = time.perf_counter()
 
     response = await call_next(request)
 
-    duration = time.time() - start_time
+    duration = time.perf_counter() - start_time
 
     response.headers["X-Process-Time"] = str(duration)
 
-    logger.info(f"Completed in {duration:.4f} seconds")
+    logger.info(f"{request.method} {request.url.path} completed in {duration:.4f} seconds")
 
     return response
 
