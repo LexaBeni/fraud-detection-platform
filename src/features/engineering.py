@@ -8,9 +8,7 @@ def add_missing_features(df):
 
     df_copy = df.copy()
 
-    avail_cols = [c for c in df_copy.columns if c != 'isFraud']
-
-    df_copy['missing_count'] = df_copy[avail_cols].isna().sum(axis=1)
+    df_copy['missing_count'] = df_copy[extended_features].isna().sum(axis=1)
 
     for i in symbols:
         df_copy[f'missing_{i}_count'] = df_copy.filter(regex = f"^{i}").isna().sum(axis=1)
@@ -27,15 +25,6 @@ def add_time_features(df):
 
     return df
 
-def create_engineered_features(df):
-    result = df[extended_features].copy()
-
-    missing_features = add_missing_features(df)
-    missing_columns = ["missing_count", *[f"missing_{symbol}_count" for symbol in symbols],]
-    result = result.join(missing_features[missing_columns])
-    result = add_time_features(result)
-
-    return result
 
 def add_amount_features(df):
     df = df.copy()
@@ -68,7 +57,7 @@ top_10_emails = ['gmail.com',
  'msn.com',
  'att.net']
 
-def add_email_features(df, unusual_emails):
+def add_email_features(df, usual_emails):
     df = df.copy()
     
     for col in ["P_emaildomain", "R_emaildomain"]:
@@ -78,30 +67,30 @@ def add_email_features(df, unusual_emails):
 
     df['domain_math'] = (df["P_emaildomain"].fillna("missing") == df["R_emaildomain"].fillna("missing")).astype(int)
 
-    is_p_unusual = ~df["P_emaildomain"].isin(unusual_emails)
-    is_r_unusual = ~df["R_emaildomain"].isin(unusual_emails)
+    is_p_unusual = ~df["P_emaildomain"].isin(usual_emails)
+    is_r_unusual = ~df["R_emaildomain"].isin(usual_emails)
 
     df['is_unusual_email'] = (is_p_unusual | is_r_unusual).astype(int)
 
     return df
 
 def add_combined_features(df):
-    df = df.copy()
-    df["card_product"] = df["card4"].astype(str) + "_" + df["ProductCD"].astype(str)
-    df["email_product"] = df["P_emaildomain"].astype(str) + "_" + df["ProductCD"].astype(str)
-    df["card_addr"] = df["card1"].astype(str) + "_" + df["addr1"].astype(str)
+    card4_clean = df["card4"].fillna("missing").astype(str)
+    card6_clean = df["card6"].fillna("missing").astype(str)
+    product_clean = df["ProductCD"].fillna("missing").astype(str)
+    card1_str = df["card1"].fillna(-1).astype(int).astype(str)
+    card2_str = df["card2"].fillna(-1).astype(int).astype(str)
+    addr1_str = df["addr1"].fillna(-1).astype(int).astype(str)
+
+    df["card_product"] = card4_clean + "_" + product_clean
+    df["email_product"] = df["P_emaildomain"].fillna("missing").astype(str) + "_" + product_clean
+    df["card_addr"] = card1_str + "_" + addr1_str
+    df["card2_product"] = card2_str + "_" + product_clean
+    df["card4_card6"] = card4_clean + "_" + card6_clean
+    df["card2_card4"] = card2_str + "_" + card4_clean
 
     return df
 
-
-def create_d_features(df):
-    df = create_engineered_features(df)
-    df = add_amount_features(df)
-    df = create_d_time_features(df)
-    df = add_email_features(df, top_10_emails)
-    df = add_combined_features(df)
-
-    return df
 
 def create_advanced_time_features(df):
     df = df.copy()
@@ -114,16 +103,6 @@ def create_advanced_time_features(df):
 
     return df
 
-def add_interaction_features(df):
-    df = df.copy()
-
-    df["card2_product"] = (df["card2"].astype(str) + "_" + df["ProductCD"].astype(str))
-
-    df["card4_card6"] = (df["card4"].astype(str) + "_" + df["card6"].astype(str))
-
-    df["card2_card4"] = (df["card2"].astype(str) + "_" + df["card4"].astype(str))
-
-    return df
 
 def add_distance_features(df):
     df = df.copy()
@@ -134,9 +113,16 @@ def add_distance_features(df):
     return df
 
 def add_all_features(df):
-    df = create_d_features(df)
+    df = add_missing_features(df)
+    df = add_time_features(df)
+    df = add_amount_features(df)
+    df = create_d_time_features(df)
+    df = add_email_features(df, top_10_emails)
+    df = add_combined_features(df)
     df = add_distance_features(df)
-    df = add_interaction_features(df)
     df = create_advanced_time_features(df)
 
+    drop_cols = ["TransactionDT", "transaction_day", "transaction_hour"]
+
+    df = df.drop(columns=[col for col in drop_cols if col in df.columns])
     return df
