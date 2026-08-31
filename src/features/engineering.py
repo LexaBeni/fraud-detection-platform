@@ -3,7 +3,7 @@ import numpy as np
 
 base_features = ['TransactionDT', "TransactionAmt", "ProductCD", "P_emaildomain", "R_emaildomain"]
 extended_features = base_features + ["card1", "card2", "card4", "card5", "card6", "addr1", "addr2", "dist1", "dist2", "D1"]
-symbols = ['V', 'D', 'M', 'C', 'id', "card", "addr", "dist"]
+symbols = ['D',"card", "addr", "dist"]
 def add_missing_features(df):
 
     df_copy = df.copy()
