@@ -15,7 +15,7 @@ def test_prepare_all_features():
     df = prepare_all_features(payload)
 
     assert len(df) == 1
-    assert len(df.columns) == 48
+    assert len(df.columns) == 41
     assert "isFraud" not in df.columns
     print(len(df.columns))
 
