@@ -57,21 +57,16 @@ def create_d_time_features(df):
 
     return df
 
-top_15_emails = ['protonmail.com',
- 'hotmail.de',
- 'aim.com',
- 'yahoo.co.jp',
- 'ptd.net',
- 'servicios-ta.com',
- 'twc.com',
- 'q.com',
- 'suddenlink.net',
- 'cableone.net',
- 'netzero.com',
- 'frontiernet.net',
- 'centurylink.net',
- 'sc.rr.com',
- 'netzero.net']
+top_10_emails = ['gmail.com',
+ 'yahoo.com',
+ 'hotmail.com',
+ 'anonymous.com',
+ 'aol.com',
+ 'comcast.net',
+ 'icloud.com',
+ 'outlook.com',
+ 'msn.com',
+ 'att.net']
 
 def add_email_features(df, unusual_emails):
     df = df.copy()
@@ -83,8 +78,8 @@ def add_email_features(df, unusual_emails):
 
     df['domain_math'] = (df["P_emaildomain"].fillna("missing") == df["R_emaildomain"].fillna("missing")).astype(int)
 
-    is_p_unusual = df["P_emaildomain"].isin(unusual_emails)
-    is_r_unusual = df["R_emaildomain"].isin(unusual_emails)
+    is_p_unusual = ~df["P_emaildomain"].isin(unusual_emails)
+    is_r_unusual = ~df["R_emaildomain"].isin(unusual_emails)
 
     df['is_unusual_email'] = (is_p_unusual | is_r_unusual).astype(int)
 
@@ -103,7 +98,7 @@ def create_d_features(df):
     df = create_engineered_features(df)
     df = add_amount_features(df)
     df = create_d_time_features(df)
-    df = add_email_features(df, top_15_emails)
+    df = add_email_features(df, top_10_emails)
     df = add_combined_features(df)
 
     return df
