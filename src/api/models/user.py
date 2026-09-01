@@ -1,11 +1,17 @@
+from __future__ import annotations
+
 from src.api.core.database import Base
-from sqlalchemy.orm import mapped_column, Mapped
+from sqlalchemy.orm import mapped_column, Mapped, relationship
 from sqlalchemy import DateTime, String, Integer, Boolean
 from datetime import datetime
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from src.api.models.prediction import Prediction
 
 class User(Base):
 
-    __tablename__ = "Users"
+    __tablename__ = "users"
 
     id: Mapped[int] = mapped_column(
         Integer, primary_key=True, autoincrement=True
@@ -30,3 +36,5 @@ class User(Base):
     created_at: Mapped[datetime] = mapped_column(
         DateTime, default = datetime.utcnow()
     )
+
+    predictions: Mapped[list["Prediction"]] = relationship(back_populates="user")
