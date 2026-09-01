@@ -2,6 +2,7 @@ from src.api.core.database import Base
 from datetime import datetime
 from sqlalchemy import Integer, String, Float, DateTime
 from sqlalchemy.orm import Mapped, mapped_column
+from typing import Literal
 
 class Prediction(Base):
 
@@ -28,6 +29,11 @@ class Prediction(Base):
             Integer,
             nullable=False
         )
+
+    label: Mapped[Literal["FRAUD", 'VALID']] = mapped_column(
+        String(10),
+        nullable=False
+    )
 
     threshold: Mapped[float] = mapped_column(
         Float,
