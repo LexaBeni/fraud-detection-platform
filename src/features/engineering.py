@@ -46,18 +46,23 @@ def create_d_time_features(df):
 
     return df
 
-top_10_emails = ['gmail.com',
- 'yahoo.com',
- 'hotmail.com',
- 'anonymous.com',
- 'aol.com',
- 'comcast.net',
- 'icloud.com',
- 'outlook.com',
- 'msn.com',
- 'att.net']
+unusual_emails = ['servicios-ta.com',
+ 'yahoo.co.jp',
+ 'hotmail.de',
+ 'live.fr',
+ 'yahoo.co.uk',
+ 'yahoo.de',
+ 'hotmail.co.uk',
+ 'protonmail.com',
+ 'ptd.net',
+ 'yahoo.fr',
+ 'suddenlink.net',
+ 'yahoo.es',
+ 'cableone.net',
+ 'gmx.de',
+ 'sc.rr.com']
 
-def add_email_features(df, usual_emails):
+def add_email_features(df, unusual_emails):
     df = df.copy()
     
     for col in ["P_emaildomain", "R_emaildomain"]:
@@ -67,14 +72,14 @@ def add_email_features(df, usual_emails):
 
     df['domain_math'] = (df["P_emaildomain"].fillna("missing") == df["R_emaildomain"].fillna("missing")).astype(int)
 
-    is_p_unusual = ~df["P_emaildomain"].isin(usual_emails)
-    is_r_unusual = ~df["R_emaildomain"].isin(usual_emails)
+    is_unusual = (df["P_emaildomain"].isin(unusual_emails)) | (df["R_emaildomain"].isin(unusual_emails)) 
 
-    df['is_unusual_email'] = (is_p_unusual | is_r_unusual).astype(int)
+    df['is_unusual_email'] = (is_unusual).astype(int)
 
     return df
 
 def add_combined_features(df):
+    df = df.copy()
     card4_clean = df["card4"].fillna("missing").astype(str)
     card6_clean = df["card6"].fillna("missing").astype(str)
     product_clean = df["ProductCD"].fillna("missing").astype(str)
@@ -113,16 +118,15 @@ def add_distance_features(df):
     return df
 
 def add_all_features(df):
+    df = df[extended_features].copy()
+
     df = add_missing_features(df)
     df = add_time_features(df)
     df = add_amount_features(df)
     df = create_d_time_features(df)
-    df = add_email_features(df, top_10_emails)
+    df = add_email_features(df, unusual_emails)
     df = add_combined_features(df)
     df = add_distance_features(df)
     df = create_advanced_time_features(df)
 
-    drop_cols = ["TransactionDT", "transaction_day", "transaction_hour"]
-
-    df = df.drop(columns=[col for col in drop_cols if col in df.columns])
     return df
