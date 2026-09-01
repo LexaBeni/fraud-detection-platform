@@ -10,6 +10,8 @@ load_dotenv(dotenv_path=ENV_PATH, override=False)
 class Settings(BaseSettings):
     model_path: str = ""
     database_url: str = ""
+    admin_email: str = ""
+    admin_password: str = ""
 
     model_config = SettingsConfigDict(
         env_file=str(ENV_PATH),
