@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from src.api.routers.health import router as health_router
+from src.api.routers.prediction import router as prediction_router
 from contextlib import asynccontextmanager
 from src.api.core.logger import logger
 from src.api.core.settings import settings
@@ -38,3 +39,4 @@ async def middleware(request, call_next):
     return response
 
 app.include_router(health_router)
+app.include_router(prediction_router)
