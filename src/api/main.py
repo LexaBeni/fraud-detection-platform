@@ -5,9 +5,10 @@ from contextlib import asynccontextmanager
 from src.api.core.logger import logger
 from src.api.core.settings import settings
 import joblib
-from src.api.core.database import Base, engine
+from src.api.core.database import Base, engine, SessionLocal
 from src.api.models.prediction import Prediction
 import time
+from src.api.services.bootstrap_service import ensure_admin
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -18,6 +19,9 @@ async def lifespan(app: FastAPI):
         logger.exception("Model loading failed")
         raise RuntimeError("Model loading failed")
 
+    with SessionLocal() as db:
+        ensure_admin(db)
+        
     yield
 
     logger.info("Server is shutting down...")
