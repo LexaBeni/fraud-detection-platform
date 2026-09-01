@@ -17,3 +17,7 @@ class PredictionRequest(BaseModel):
     dist1: Optional[float] = None
     dist2: Optional[float] = None
     D1: float | None = None
+
+class PredictionResponse(BaseModel):
+    prediction: str
+    probability: float
