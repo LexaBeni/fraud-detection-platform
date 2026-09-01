@@ -8,16 +8,16 @@ class PredictionService:
         self.db = db
         self.model = model
 
-    def predict(self, df, threshold: int | None = 18):
+    def predict(self, df, threshold: float = 0.18):
         if self.model is None:
             raise ValueError("Model is not found")
 
-        df = prepare_all_features(df)
-
         try:
+            df = prepare_all_features(df)
+
             prob = (self.model.predict_proba(df)[0, 1])
 
-            pred = (prob > threshold).astype(int)
+            pred = int((prob > threshold))
         except Exception as e:
             logger.exception(e)
             raise ValueError("Invalid payload.")
@@ -36,7 +36,7 @@ class PredictionService:
 
         return{
             "prediction" : label,
-            "probability": round(prob, 2)
+            "probability": round(float(prob), 4)
         }
 
         

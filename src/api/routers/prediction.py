@@ -15,5 +15,5 @@ def predict(df:PredictionRequest, model = Depends(get_model), db= Depends(get_db
     except Exception as e:
         logger.exception(e)
 
-        HTTPException(status_code=500, detail="Prediction failed.")
+        raise HTTPException(status_code=500, detail="Prediction failed.")
     
