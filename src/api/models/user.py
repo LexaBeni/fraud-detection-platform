@@ -30,7 +30,7 @@ class User(Base):
     )
 
     is_active: Mapped[str] = mapped_column(
-        Boolean, nullable=False
+        Boolean, default=True
     )
 
     created_at: Mapped[datetime] = mapped_column(
