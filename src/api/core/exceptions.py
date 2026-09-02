@@ -7,4 +7,10 @@ class AppException(Exception):
 
         super().__init__(message)
 
+class UserAlreadyExists(AppException):
+    def __init__(self, information):
+        self.information = information
+
+        super().__init__(status_code=409, error_code="USER_ALREADY_EXISTS" , message=f"User with {self.information} already exists", details=self.information)
+        
     
