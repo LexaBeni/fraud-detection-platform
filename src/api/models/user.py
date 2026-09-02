@@ -29,12 +29,12 @@ class User(Base):
         String(25), default="user"
     )
 
-    is_active: Mapped[str] = mapped_column(
+    is_active: Mapped[bool] = mapped_column(
         Boolean, default=True
     )
 
     created_at: Mapped[datetime] = mapped_column(
-        DateTime, default = datetime.utcnow()
+        DateTime, default = datetime.utcnow
     )
 
     predictions: Mapped[list["Prediction"]] = relationship(back_populates="user")
