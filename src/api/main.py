@@ -1,4 +1,5 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
+from fastapi.responses import JSONResponse
 from src.api.routers.health import router as health_router
 from src.api.routers.prediction import router as prediction_router
 from contextlib import asynccontextmanager
@@ -9,6 +10,7 @@ from src.api.core.database import Base, engine, SessionLocal
 from src.api.models.prediction import Prediction
 import time
 from src.api.services.bootstrap_service import ensure_admin
+from src.api.core.exceptions import AppException
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -44,3 +46,13 @@ async def middleware(request, call_next):
 
 app.include_router(health_router)
 app.include_router(prediction_router)
+
+@app.exception_handler(AppException)
+def app_exception(requst: Request, exc: AppException):
+    return JSONResponse(status_code=exc.status_code,
+                        content={
+                            "status": "error",
+                            "error_code": exc.error_code,
+                            "message": exc.message,
+                            "detail": exc.details
+                        })
