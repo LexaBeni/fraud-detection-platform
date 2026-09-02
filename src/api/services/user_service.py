@@ -45,7 +45,7 @@ class UserService:
         if not user_db:
             raise InvalidCredentials()
 
-        if not verify_password(user_db.hashed_password, user.password):
+        if not verify_password(user.password, user_db.hashed_password):
             raise InvalidCredentials()
 
         return user_db
