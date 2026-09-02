@@ -29,7 +29,7 @@ class User(Base):
         String(25), default="user"
     )
 
-    is_active: Mapped[str] = mapped_column(
+    is_active: Mapped[bool] = mapped_column(
         Boolean, default=True
     )
 
