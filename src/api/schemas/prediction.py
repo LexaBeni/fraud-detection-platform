@@ -1,5 +1,6 @@
 from pydantic import BaseModel, Field
 from typing import Optional
+from datetime import datetime
 
 class PredictionRequest(BaseModel):
     TransactionDT: int
@@ -21,3 +22,9 @@ class PredictionRequest(BaseModel):
 class PredictionResponse(BaseModel):
     prediction: str
     probability: float
+
+class PredictionHistoryResponse(BaseModel):
+    prediction: str
+    probability: float
+    threshold: float
+    created_at: datetime
