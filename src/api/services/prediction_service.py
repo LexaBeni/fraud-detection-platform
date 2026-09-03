@@ -1,6 +1,10 @@
 from src.api.functions.features import prepare_all_features
 from src.api.models.prediction import Prediction
 from src.api.core.logger import logger
+from src.roles import UserRole
+from src.api.models.prediction import Prediction
+from sqlalchemy import select
+from src.api.core.exceptions import PredictionNotFound
 
 class PredictionService:
 
@@ -40,11 +44,34 @@ class PredictionService:
             "probability": round(float(prob), 4)
         }
 
-        
+    def get_prediction(self, prediction_id: int, user):
 
-        
+        stmt = select(Prediction).where(Prediction.id == prediction_id)
 
+        if user.role != UserRole.ADMIN:
+            atmt = stmt.where(Prediction.user_id == user.id)
 
+        result = self.db.execute(stmt).scalar_one_or_none
 
+        if not result:
+            raise PredictionNotFound(prediction_id)
+        return result
 
+    def get_prediction_history(self, user, condition, offset, limit):
+        stmt = select(Prediction)
 
+        if user.role != UserRole.ADMIN:
+            stmt = stmt.where(Prediction.user_id == user.id)
+
+        stmt = stmt.order_by(Prediction.created_at.desc).offset(offset).limit(limit)
+
+        result = self.db.execute(stmt).scalars().all()
+
+        return result
+
+    def delete_prediction(self, prediction_id, user):
+        prediction = self.get_prediction(prediction_id, user)
+
+        self.db.delete(prediction)
+
+        self.db.commit()
