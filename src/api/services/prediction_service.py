@@ -49,9 +49,9 @@ class PredictionService:
         stmt = select(Prediction).where(Prediction.id == prediction_id)
 
         if user.role != UserRole.ADMIN:
-            atmt = stmt.where(Prediction.user_id == user.id)
+            stmt = stmt.where(Prediction.user_id == user.id)
 
-        result = self.db.execute(stmt).scalar_one_or_none
+        result = self.db.execute(stmt).scalar_one_or_none()
 
         if not result:
             raise PredictionNotFound(prediction_id)
