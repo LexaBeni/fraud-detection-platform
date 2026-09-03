@@ -8,7 +8,7 @@ class PredictionService:
         self.db = db
         self.model = model
 
-    def predict(self, df, threshold: float = 0.18):
+    def predict(self, df, user, threshold: float = 0.18):
         if self.model is None:
             raise ValueError("Model is not found")
 
@@ -28,7 +28,8 @@ class PredictionService:
             prediction_probability = prob,
             prediction = pred,
             threshold = threshold,
-            label = label)
+            label = label,
+            user_id = user.id)
 
         self.db.add(prediction_db)
         self.db.commit()
