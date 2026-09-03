@@ -12,6 +12,10 @@ class Settings(BaseSettings):
     database_url: str = ""
     admin_email: str = ""
     admin_password: str = ""
+    jwt_secret_key: str = ""
+    jwt_algorithm: str = ""
+    access_token_expires_minutes: int = 1
+    refresh_token_expires_days: int = 1
 
     model_config = SettingsConfigDict(
         env_file=str(ENV_PATH),
