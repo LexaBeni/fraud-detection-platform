@@ -63,11 +63,22 @@ class PredictionService:
         if user.role != UserRole.ADMIN:
             stmt = stmt.where(Prediction.user_id == user.id)
 
-        stmt = stmt.order_by(Prediction.created_at.desc).offset(offset).limit(limit)
+        if condition:
+            stmt = stmt.where(Prediction.label == condition)
+
+        stmt = stmt.order_by(Prediction.created_at.desc()).offset(offset).limit(limit)
 
         result = self.db.execute(stmt).scalars().all()
 
-        return result
+        return [
+            {
+                "prediction": prediction.label,
+                "probability": round(float(prediction.prediction_probability), 4),
+                "threshold": prediction.threshold,
+                "created_at": prediction.created_at,
+            }
+            for prediction in result
+        ]
 
     def delete_prediction(self, prediction_id, user):
         prediction = self.get_prediction(prediction_id, user)
