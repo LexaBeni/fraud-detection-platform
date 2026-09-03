@@ -31,5 +31,12 @@ def get_history(db=Depends(get_db), model=Depends(get_model), user = Depends(get
 
     return service.get_prediction_history(user=user, limit=limit, offset=offset, condition=condition)
 
+@router.delete("/delete/{id}")
+def delete_prediction(id: int, db=Depends(get_db), model=Depends(get_model), user=Depends(get_current_user)):
+    service = PredictionService(model=model, db=db)
+
+    service.delete_prediction(prediction_id=id, user=user)
+
+    return f"The prediction with id {id} was successfully removed."
 
     
