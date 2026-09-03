@@ -11,7 +11,7 @@ from src.api.services.token_service import TokenService
 
 router = APIRouter(prefix="/auth", tags=["User"])
 
-@router.get("/me", response_model=TokenResponse)
+@router.get("/me", response_model=UserResponse)
 def get_me(current_user: User = Depends(get_current_user)):
     return current_user
 
@@ -21,8 +21,8 @@ def register(user: UserCreate, db: Session = Depends(get_db)):
 
     return service.register_user(user)
 
-@router.post("/login", status_code=status.HTTP_200_OK)
-def login(data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db), user = UserCreate):
+@router.post("/login", response_model=TokenResponse, status_code=status.HTTP_200_OK)
+def login(data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     service = UserService(db=db)
 
     user = UserCreate(email=data.username, password=data.password)
