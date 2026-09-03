@@ -19,4 +19,10 @@ class InvalidCredentials(AppException):
 
         super().__init__(status_code=401, error_code="INVALID_CREDENTIALS", message="Invalid email or password")
 
+class PredictionNotFound(AppException):
+    def __init__(self, id):
+        self.id = id
+
+        super().__init__(status_code=404, error_code="PREDICTION_NOT_FOUND", message=f"Prediction with id {id} is not found", details=id)
+
     
