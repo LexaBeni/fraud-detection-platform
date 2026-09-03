@@ -1,8 +1,12 @@
+from __future__ import annotations
+
 from src.api.core.database import Base
 from datetime import datetime
 from sqlalchemy import Boolean, String, Integer, DateTime, ForeignKey
 from sqlalchemy.orm import mapped_column, Mapped, relationship
-from src.api.models.user import User
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from src.api.models.user import User
 
 class RefreshToken(Base):
 

@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from src.api.models.prediction import Prediction
+    from src.api.models.refresh_token import RefreshToken
 
 class User(Base):
 
@@ -38,3 +39,5 @@ class User(Base):
     )
 
     predictions: Mapped[list["Prediction"]] = relationship(back_populates="user")
+
+    refresh_tokens: Mapped[list["RefreshToken"]] = relationship(back_populates="user", cascade="all, delete-orphan")
