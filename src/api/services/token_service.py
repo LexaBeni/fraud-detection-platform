@@ -2,7 +2,7 @@ from datetime import datetime, timedelta, timezone
 from jose import jwt
 from src.api.core.settings import settings
 
-class TokenService():
+class TokenService:
 
     @staticmethod
     def create_token(data: dict, exp_delta: timedelta):
