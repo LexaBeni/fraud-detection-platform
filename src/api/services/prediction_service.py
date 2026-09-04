@@ -55,7 +55,12 @@ class PredictionService:
 
         if not result:
             raise PredictionNotFound(prediction_id)
-        return result
+        return {
+            "prediction": result.label,
+            "probability": round(float(result.prediction_probability), 4),
+            "threshold": result.threshold,
+            "created_at": result.created_at,
+        }
 
     def get_prediction_history(self, user, condition, offset, limit):
         stmt = select(Prediction)
