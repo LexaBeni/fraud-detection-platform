@@ -35,7 +35,7 @@ def login(data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get
 
     refresh_token_service = RefreshTokenService(db)
     
-    refresh_token_service.append_refresh_token(data=refresh_token, user=user_db)
+    refresh_token_service.append_refresh_token(refresh_token=refresh_token, user=user_db)
 
     return TokenResponse(
         access_token=access_token.token,
