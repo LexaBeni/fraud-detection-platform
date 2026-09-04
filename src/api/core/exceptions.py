@@ -25,4 +25,9 @@ class PredictionNotFound(AppException):
 
         super().__init__(status_code=404, error_code="PREDICTION_NOT_FOUND", message=f"Prediction with id {id} is not found", details=id)
 
+class InvalidRefreshToken(AppException):
+    def __init__(self):
+        
+        super().__init__(status_code=401, error_code="INVALID_REFRESH_TOKEN", message="Invalid or expired refresh token.")
+
     
