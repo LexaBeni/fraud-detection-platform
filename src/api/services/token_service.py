@@ -1,6 +1,12 @@
 from datetime import datetime, timedelta, timezone
 from jose import jwt
 from src.api.core.settings import settings
+from dataclasses import dataclass
+
+@dataclass
+class TokenData:
+    token: str
+    expires_at: datetime
 
 class TokenService:
 
@@ -11,7 +17,7 @@ class TokenService:
         to_encode.update({"exp": expire})
         encoded_jwt = jwt.encode(to_encode, settings.jwt_secret_key, settings.jwt_algorithm)
 
-        return encoded_jwt
+        return TokenData(token=encoded_jwt, expires_at=expire)
 
     @staticmethod
     def create_access_token(user):
