@@ -12,7 +12,7 @@ class RefreshToken(Base):
 
     __tablename__ = "refresh_tokens"
 
-    id: Mapped[str] = mapped_column(
+    id: Mapped[int] = mapped_column(
         Integer, primary_key=True, autoincrement=True
     )
 
@@ -24,7 +24,7 @@ class RefreshToken(Base):
         String(128), nullable=False, unique=True
     )
 
-    exprires_at: Mapped[datetime] = mapped_column(
+    expires_at: Mapped[datetime] = mapped_column(
         DateTime, nullable=False
     )
 
