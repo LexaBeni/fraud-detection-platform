@@ -8,6 +8,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from src.dependencies.auth import get_current_user
 from src.api.models.user import User
 from src.api.services.token_service import TokenService
+from src.api.services.refresh_token_service import RefreshTokenService
 
 router = APIRouter(prefix="/auth", tags=["User"])
 
@@ -32,9 +33,12 @@ def login(data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get
     access_token = TokenService.create_access_token(user_db)
     refresh_token = TokenService.create_refresh_token(user_db)
 
-    return TokenResponse(
-        access_token=access_token,
-        refresh_token=refresh_token
-    )
+    refresh_token_service = RefreshTokenService(db)
+    
+    refresh_token_service.append_refresh_token(data=refresh_token, user=user_db)
 
+    return TokenResponse(
+        access_token=access_token.token,
+        refresh_token=refresh_token.token
+    )
 
