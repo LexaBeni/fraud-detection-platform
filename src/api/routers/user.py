@@ -98,6 +98,8 @@ def logout(data: RefreshTokenRequest, db:Session = Depends(get_db)):
         service.revoke_refresh_token(refresh_token_db)
 
         db.commit()
+
+        return f"The user with id {decode_refresh_token(refresh_token)["sub"]} was successfully logged out!"
     except:
         db.rollback()
         raise
