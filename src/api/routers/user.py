@@ -85,3 +85,19 @@ def refresh(data: RefreshTokenRequest, db: Session = Depends(get_db)):
     except Exception:
         db.rollback()
         raise
+
+@router.post("/logout")
+def logout(data: RefreshTokenRequest, db:Session = Depends(get_db)):
+    service = RefreshTokenService(db=db)
+
+    refresh_token = data.refresh_token
+
+    try:
+        refresh_token_db = service.get_refresh_token(refresh_token)
+
+        service.revoke_refresh_token(refresh_token_db)
+
+        db.commit()
+    except:
+        db.rollback()
+        raise
