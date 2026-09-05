@@ -41,3 +41,7 @@ class RefreshTokenService:
             InvalidRefreshToken()
 
         return result
+
+    def revoke_refresh_token(self, refresh_token_db):
+        refresh_token_db.revoked = True
+        self.db.commit()
