@@ -9,6 +9,7 @@ from src.dependencies.auth import get_current_user, decode_refresh_token
 from src.api.models.user import User
 from src.api.services.token_service import TokenService
 from src.api.services.refresh_token_service import RefreshTokenService
+from src.api.core.exceptions import InvalidRefreshToken
 
 router = APIRouter(prefix="/auth", tags=["User"])
 
@@ -37,6 +38,8 @@ def login(data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get
     
     refresh_token_service.append_refresh_token(refresh_token=refresh_token, user=user_db)
 
+    db.commit()
+
     return TokenResponse(
         access_token=access_token.token,
         refresh_token=refresh_token.token
@@ -58,6 +61,9 @@ def refresh(data: RefreshTokenRequest, db: Session = Depends(get_db)):
         refresh_token_service = RefreshTokenService(db)
 
         refresh_token_db = refresh_token_service.get_refresh_token(refresh_token=refresh_token)
+
+        if refresh_token_db.user_id != user.id:
+            raise InvalidRefreshToken()
 
         refresh_token_service.revoke_refresh_token(refresh_token_db)
 
