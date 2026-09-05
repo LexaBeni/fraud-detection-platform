@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, ConfigDict
 from typing import Optional
 from datetime import datetime
 
@@ -48,6 +48,28 @@ class PredictionRequest(BaseModel):
         if v.lower() not in allowed:
             raise ValueError(f"card6 must be one of {allowed}")
         return v.lower()
+
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "TransactionDT": 86400,
+                "TransactionAmt": 49.50,
+                "ProductCD": "W",
+                "P_emaildomain": "gmail.com",
+                "R_emaildomain": None,
+                "card1": 13926,
+                "card2": 327,
+                "card4": "discover",
+                "card5": 162,
+                "card6": "credit",
+                "addr1": 315,
+                "addr2": 87,
+                "dist1": 19.0,
+                "dist2": None,
+                "D1": 14.0
+            }
+        }
+    )
     
 class PredictionResponse(BaseModel):
     prediction: str
