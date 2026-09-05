@@ -19,8 +19,6 @@ class RefreshTokenService:
             expires_at = refresh_token.expires_at                              
         )
         self.db.add(refresh_token_db)
-        self.db.commit()
-        self.db.refresh(refresh_token_db)
 
         return refresh_token_db
 
@@ -44,4 +42,3 @@ class RefreshTokenService:
 
     def revoke_refresh_token(self, refresh_token_db):
         refresh_token_db.revoked = True
-        self.db.commit()
