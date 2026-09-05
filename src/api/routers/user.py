@@ -90,16 +90,22 @@ def refresh(data: RefreshTokenRequest, db: Session = Depends(get_db)):
 def logout(data: RefreshTokenRequest, db:Session = Depends(get_db)):
     service = RefreshTokenService(db=db)
 
-    refresh_token = data.refresh_token
-
     try:
+        refresh_token = data.refresh_token
+
+        payload = decode_refresh_token(refresh_token)
+
         refresh_token_db = service.get_refresh_token(refresh_token)
+
+        if refresh_token_db.user_id != int(payload["sub"]):
+            raise InvalidRefreshToken()
 
         service.revoke_refresh_token(refresh_token_db)
 
         db.commit()
 
-        return f"The user with id {decode_refresh_token(refresh_token)["sub"]} was successfully logged out!"
-    except:
+        return f"The user with id {payload["sub"]} was successfully logged out!"
+    
+    except Exception:
         db.rollback()
         raise
