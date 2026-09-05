@@ -58,6 +58,9 @@ def refresh(data: RefreshTokenRequest, db: Session = Depends(get_db)):
 
         user = user_service.get_user_by_id(int(user_id))
 
+        if user is None or not user.is_active:
+            raise InvalidRefreshToken()
+
         refresh_token_service = RefreshTokenService(db)
 
         refresh_token_db = refresh_token_service.get_refresh_token(refresh_token=refresh_token)
