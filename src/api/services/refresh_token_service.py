@@ -35,7 +35,7 @@ class RefreshTokenService:
         if result.revoked:
             InvalidRefreshToken()
 
-        if result.expires_at < datetime.now(timezone.utc):
+        if result.expires_at.replace(tzinfo=timezone.utc) < datetime.now(timezone.utc):
             InvalidRefreshToken()
 
         return result
