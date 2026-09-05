@@ -54,10 +54,15 @@ def refresh(data: RefreshTokenRequest, db: Session = Depends(get_db)):
 
     user = user_service.get_user_by_id(int(user_id))
 
-    new_access_token = TokenService.create_access_token(user)
-
     refresh_token_service = RefreshTokenService(db)
 
     refresh_token_db = refresh_token_service.get_refresh_token(refresh_token=refresh_token)
+
+    refresh_token_service.revoke_refresh_token(refresh_token_db)
+
+    new_access_token = TokenService.create_access_token(user)
+    new_refresh_token = TokenService.create_refresh_token(user)
+
+    refresh_token_service.append_refresh_token(refresh_token=new_refresh_token, user=user)
 
 
