@@ -30,13 +30,13 @@ class RefreshTokenService:
         result = self.db.execute(stmt).scalar_one_or_none()
 
         if not result:
-            InvalidRefreshToken()
+            raise InvalidRefreshToken()
 
         if result.revoked:
-            InvalidRefreshToken()
+            raise InvalidRefreshToken()
 
         if result.expires_at.replace(tzinfo=timezone.utc) < datetime.now(timezone.utc):
-            InvalidRefreshToken()
+            raise InvalidRefreshToken()
 
         return result
 
