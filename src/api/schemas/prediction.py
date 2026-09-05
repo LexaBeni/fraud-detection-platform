@@ -1,24 +1,54 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 from typing import Optional
 from datetime import datetime
 
 class PredictionRequest(BaseModel):
-    TransactionDT: int
-    TransactionAmt: float
-    ProductCD: str
-    P_emaildomain: Optional[str] = None
-    R_emaildomain: Optional[str] = None
-    card1: Optional[int] = None
-    card2: Optional[int] = None
-    card4: Optional[str] = None
-    card5: Optional[int] = None
-    card6: Optional[str] = None
-    addr1: Optional[int] = None
-    addr2: Optional[int] = None
-    dist1: Optional[float] = None
-    dist2: Optional[float] = None
-    D1: float | None = None
+    TransactionDT: int = Field(ge=0, description="Timedelta from a given reference datetime")
+    TransactionAmt: float = Field(ge=0, description="Transaction payment amount in USD")
+    ProductCD: str = Field(description="Product code, the product for each transaction")
+    P_emaildomain: Optional[str] = Field(None, description="Purchaser email domain")
+    R_emaildomain: Optional[str] = Field(None, description="Recipient email domain")
+    card1: Optional[int] = Field(None, description="Payment card information (e.g., card series)", ge=1000)
+    card2: Optional[int] = Field(None, description="Payment card information (e.g., bank ID)", ge=100)
+    card4: Optional[str] = Field(None, description="Card type (e.g., visa, mastercard, discover, amex)")
+    card5: Optional[int] = Field(None, description="Payment card information (e.g., bank category)", ge=100)
+    card6: Optional[str] = Field(None, description="Card category (e.g., credit, debit)")
+    addr1: Optional[int] = Field(None, description="Billing region/zip code")
+    addr2: Optional[int] = Field(None, description="Billing country code")
+    dist1: Optional[float] = Field(None, description="Distance between billing address and zip code", ge=0)
+    dist2: Optional[float] = Field(None, description="Distance from alternative address", ge=0)
+    D1: Optional[float] = Field(None, description="Timedelta, such as days since last transaction", ge=0)
 
+    @field_validator("ProductCD")
+    @classmethod
+    def validate_product(cls, v):
+        allowed = {'W', 'H', 'C', 'S', 'R'}
+        if v not in allowed:
+            raise ValueError(f"ProductCD must be one of {allowed}")
+        return v
+
+    @field_validator("card4")
+    @classmethod
+    def validate_card4(cls, v):
+        if not v:
+            return v
+        allowed = {'visa', 'mastercard', 'american express', 'discover'}
+
+        if v.lower() not in allowed:
+             raise ValueError(f"card4 must be one of {allowed}")
+        return v.lower()
+
+    @field_validator("card6")
+    @classmethod
+    def validate_card6(cls, v):
+        if not v:
+            return v
+        allowed = ('credit', 'debit', 'debit or credit', 'charge card')
+
+        if v.lower() not in allowed:
+            raise ValueError(f"card6 must be one of {allowed}")
+        return v.lower()
+    
 class PredictionResponse(BaseModel):
     prediction: str
     probability: float
