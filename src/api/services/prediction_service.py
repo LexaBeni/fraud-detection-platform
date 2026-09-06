@@ -15,7 +15,7 @@ class PredictionService:
     def predict(self, df, user, threshold: float = 0.18):
 
         if not self.model:
-            raise ValueError("Mode is not found.")
+            raise ValueError("Model is not found.")
         
         try:
             df = prepare_all_features(df)
@@ -23,28 +23,31 @@ class PredictionService:
             prob = (self.model.predict_proba(df)[0, 1])
 
             pred = int((prob > threshold))
-            
-        except Exception as e:
-            logger.exception(e)
-            raise ValueError("Invalid payload.")
 
-        label = "FRAUD" if pred == 1 else "VALID"
+            label = "FRAUD" if pred == 1 else "VALID"
 
-        prediction_db = Prediction(
+            prediction_db = Prediction(
             prediction_probability = prob,
             prediction = pred,
             threshold = threshold,
             label = label,
             user_id = user.id)
 
-        self.db.add(prediction_db)
-        self.db.commit()
-        self.db.refresh(prediction_db)
+            self.db.add(prediction_db)
+            self.db.commit()
+            self.db.refresh(prediction_db)
 
-        return{
-            "prediction" : label,
-            "probability": round(float(prob), 4)
-        }
+            return { 
+                "id": prediction_db.id, 
+                "prediction": label, 
+                "probability": round(prob, 4), 
+                "threshold": prediction_db.threshold, 
+                "created_at": str(prediction_db.created_at) 
+                }
+        except Exception as e:
+                logger.exception(e)
+                self.db.rollback()
+                raise ValueError("Invalid payload or prediction processing failed.")
 
     def get_prediction(self, prediction_id: int, user):
 
