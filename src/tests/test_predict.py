@@ -27,6 +27,9 @@ def test_predict(client, auth_header):
 
     assert result['prediction'] == "FRAUD"
     assert result['probability'] == 0.9
+    assert "id" in result
+    assert result["threshold"] == 0.18
+    assert isinstance(result["created_at"], str)
 
 @pytest.mark.parametrize("field, value", [
     ("TransactionDT", -1),
@@ -61,3 +64,4 @@ def test_predict_without_auth(client):
     res = client.post("/predict", json=data)
 
     assert res.status_code == 401
+
