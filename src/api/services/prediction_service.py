@@ -8,20 +8,22 @@ from src.api.core.exceptions import PredictionNotFound
 
 class PredictionService:
 
-    def __init__(self, model, db):
+    def __init__(self, db, model=None):
         self.db = db
         self.model = model
 
     def predict(self, df, user, threshold: float = 0.18):
-        if self.model is None:
-            raise ValueError("Model is not found")
 
+        if not self.model:
+            raise ValueError("Mode is not found.")
+        
         try:
             df = prepare_all_features(df)
 
             prob = (self.model.predict_proba(df)[0, 1])
 
             pred = int((prob > threshold))
+            
         except Exception as e:
             logger.exception(e)
             raise ValueError("Invalid payload.")
