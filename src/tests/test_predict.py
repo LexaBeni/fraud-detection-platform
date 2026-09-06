@@ -25,7 +25,8 @@ def test_predict(client, auth_header):
 
     result = res.json()
 
-    assert result['prediction'] == "VALID"
+    assert result['prediction'] == "FRAUD"
+    assert result['probability'] == 0.9
 
 @pytest.mark.parametrize("field, value", [
     ("TransactionDT", -1),
