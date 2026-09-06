@@ -34,9 +34,10 @@ def client():
     Base.metadata.create_all(bind=test_engine)
 
     app.dependency_overrides[get_db] = override_get_db
-    app.state.model = DummyModel
+    app.state.model = DummyModel()
 
-    yield TestClient(app)
+    with TestClient(app) as client:
+        yield client
 
     app.dependency_overrides.clear()
 
