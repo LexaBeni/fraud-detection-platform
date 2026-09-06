@@ -15,7 +15,7 @@ email-validator==2.3.0
 SQLAlchemy==2.0.51
 alembic==1.18.5
 PyMySQL==1.2.0
-httpx
+httpx2
 joblib
 pytest
 passlib==1.7.4
