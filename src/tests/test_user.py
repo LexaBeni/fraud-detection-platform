@@ -16,7 +16,8 @@ def user_create(client):
 
     return user
 
-def test_user_login(client, user_create):
+@pytest.fixture
+def user_login(client, user_create):
 
     res = client.post("/auth/login", data = {"username": user_create['email'], "password": user_create['password']})
 
