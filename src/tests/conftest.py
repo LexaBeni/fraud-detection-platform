@@ -69,5 +69,8 @@ def user_login(client, user_create):
     assert tokens["token_type"] == "bearer"
 
     return tokens
-   
+
+@pytest.fixture
+def auth_header(user_login):
+    return {"Authorization": f"Bearer {user_login["access_token"]}"}
     
