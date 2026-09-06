@@ -16,6 +16,7 @@ class Settings(BaseSettings):
     jwt_algorithm: str = ""
     access_token_expires_minutes: int = 1
     refresh_token_expires_days: int = 1
+    test_database_url: str = ""
 
     model_config = SettingsConfigDict(
         env_file=str(ENV_PATH),
