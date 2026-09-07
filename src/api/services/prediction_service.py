@@ -61,6 +61,7 @@ class PredictionService:
         if not result:
             raise PredictionNotFound(prediction_id)
         return {
+            "id": result.id,
             "prediction": result.label,
             "probability": round(float(result.prediction_probability), 4),
             "threshold": result.threshold,
@@ -82,6 +83,7 @@ class PredictionService:
 
         return [
             {
+                "id": prediction.id,
                 "prediction": prediction.label,
                 "probability": round(float(prediction.prediction_probability), 4),
                 "threshold": prediction.threshold,
