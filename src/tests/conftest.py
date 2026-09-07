@@ -7,6 +7,7 @@ from src.api.core.database import Base
 from src.api.main import app
 from src.dependencies.database import get_db
 import numpy as np
+from src.api.services.bootstrap_service import ensure_admin
 
 test_engine = create_engine(settings.test_database_url)
 
@@ -56,6 +57,14 @@ def user_create(client):
     user['password'] = data['password']
 
     return user
+
+@pytest.fixture
+def create_admin(client):
+    db = test_session_local()
+    try:
+        return ensure_admin(db)
+    finally:
+        db.close()
 
 @pytest.fixture
 def user_login(client, user_create):
