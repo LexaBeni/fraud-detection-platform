@@ -74,4 +74,20 @@ def user_login(client, user_create):
 @pytest.fixture
 def auth_header(user_login):
     return {"Authorization": f"Bearer {user_login["access_token"]}"}
+
+@pytest.fixture
+def create_prediction(client, auth_header):
+    data = {
+        "TransactionDT": 86400,
+        "TransactionAmt": 49.50,
+        "ProductCD": "W"
+    }
+
+    res = client.post("/predict", json=data, headers=auth_header)
+
+    assert res.status_code == 200
+
+    result = res.json()
+
+    return result
     
