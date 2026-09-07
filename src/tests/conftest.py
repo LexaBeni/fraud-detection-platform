@@ -59,6 +59,20 @@ def user_create(client):
     return user
 
 @pytest.fixture
+def another_user_create(client):
+    data = {"email": "test2@test.com", "password": "test2"}
+
+    res = client.post("/auth/register", json=data)
+
+    user = res.json()
+
+    assert res.status_code == 201
+
+    user['password'] = data['password']
+
+    return user
+
+@pytest.fixture
 def create_admin(client):
     db = test_session_local()
     try:
@@ -80,6 +94,16 @@ def user_login(client, user_create):
 
     return tokens
 
+@pytest.fixture
+def another_user_login(client, another_user_create):
+
+    res = client.post("/auth/login", data = {"username": another_user_create['email'], "password": another_user_create['password']})
+
+    tokens = res.json()
+
+    assert res.status_code == 200
+
+    return tokens
 
 @pytest.fixture
 def login_admin(client, create_admin):
@@ -92,6 +116,10 @@ def login_admin(client, create_admin):
 @pytest.fixture
 def auth_header(user_login):
     return {"Authorization": f"Bearer {user_login["access_token"]}"}
+
+@pytest.fixture
+def another_auth_header(another_user_login):
+    return {"Authorization": f"Bearer {another_user_login["access_token"]}"}
 
 @pytest.fixture
 def auth_admin(login_admin):
