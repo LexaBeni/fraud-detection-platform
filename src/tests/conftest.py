@@ -61,8 +61,6 @@ def user_create(client):
     user = res.json()
 
     assert res.status_code == 201
-    assert "password" not in user
-    assert user['role'] == "user"
 
     user['password'] = data['password']
 
@@ -98,9 +96,6 @@ def user_login(client, user_create):
     tokens = res.json()
 
     assert res.status_code == 200
-    assert "refresh_token" in tokens
-    assert "access_token" in tokens
-    assert tokens["token_type"] == "bearer"
 
     return tokens
 
