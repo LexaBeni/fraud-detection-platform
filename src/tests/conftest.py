@@ -80,9 +80,22 @@ def user_login(client, user_create):
 
     return tokens
 
+
+@pytest.fixture
+def login_admin(client, create_admin):
+    res = client.post("/auth/login", data={"username": create_admin.email, "password": settings.admin_password})
+
+    assert res.status_code == 200
+
+    return res.json()
+
 @pytest.fixture
 def auth_header(user_login):
     return {"Authorization": f"Bearer {user_login["access_token"]}"}
+
+@pytest.fixture
+def auth_admin(login_admin):
+    return {"Authorization": f"Bearer {login_admin["access_token"]}"}
 
 @pytest.fixture
 def create_prediction(client, auth_header):
