@@ -55,58 +55,58 @@ def test_invalid_predict(client, auth_header, field, value):
     assert res.status_code == 422
 
 def test_get_prediction(client, create_prediction, auth_header):
-    id = create_prediction['id']
+    prediction_id = create_prediction['id']
 
-    res = client.get(f"/predict/history/{id}", headers = auth_header)
+    res = client.get(f"/predict/history/{prediction_id}", headers = auth_header)
 
     data = res.json()
 
     assert res.status_code == 200
-    assert data['id'] == id
+    assert data['id'] == prediction_id
     assert data['created_at'] is not None
     assert data['threshold'] == 0.18
     assert data['prediction'] in ["FRAUD", "VALID"]
     assert data['probability'] <= 1
 
 def test_get_prediction_no_auth(client, create_prediction):
-    id = create_prediction["id"]
+    prediction_id = create_prediction["id"]
 
-    res = client.get(f"/predict/history/{id}")
+    res = client.get(f"/predict/history/{prediction_id}")
 
     assert res.status_code == 401
 
 def test_get_history(client, create_prediction, auth_header):
     res = client.get("/predict/history", headers=auth_header)
 
-    id = create_prediction['id']
+    prediction_id = create_prediction['id']
 
     data = res.json()[0]
 
     assert res.status_code == 200
-    assert data['id'] == id
+    assert data['id'] == prediction_id
     assert data['created_at'] is not None
     assert data['threshold'] == 0.18
     assert data['prediction'] in ["FRAUD", "VALID"]
     assert data['probability'] <= 1
 
 def test_get_prediction_admin(client, create_prediction, auth_admin):
-    id = create_prediction["id"]
-    res = client.get(f"/predict/history/{id}", headers=auth_admin)
+    prediction_id = create_prediction["id"]
+    res = client.get(f"/predict/history/{prediction_id}", headers=auth_admin)
 
     assert res.status_code == 200
 
     data = res.json()
 
-    assert data['id'] == id
+    assert data['id'] == prediction_id
     assert data['created_at'] is not None
     assert data['threshold'] == 0.18
     assert data['prediction'] in ["FRAUD", "VALID"]
     assert data['probability'] <= 1
 
 def test_get_another_user_predicttion(client, create_prediction, another_auth_header):
-    id = create_prediction["id"]
+    prediction_id = create_prediction["id"]
 
-    res = client.get(f"/predict/history/{id}", headers=another_auth_header)
+    res = client.get(f"/predict/history/{prediction_id}", headers=another_auth_header)
 
     assert res.status_code == 404
     
@@ -114,24 +114,24 @@ def test_get_another_user_predicttion(client, create_prediction, another_auth_he
     assert data["error_code"] == "PREDICTION_NOT_FOUND"
 
 def test_delete_prediction(client, create_prediction, auth_header):
-    id = create_prediction["id"]
+    prediction_id = create_prediction["id"]
     
-    res = client.delete(f"/predict/delete/{id}", headers=auth_header)
+    res = client.delete(f"/predict/delete/{prediction_id}", headers=auth_header)
 
     assert res.status_code == 200
 
     data = res.json()
 
-    assert data == (f"The prediction with id {id} was successfully removed.")
+    assert data == (f"The prediction with id {prediction_id} was successfully removed.")
 
-    res = client.get(f"/predict/history/{id}", headers=auth_header)
+    res = client.get(f"/predict/history/{prediction_id}", headers=auth_header)
 
     assert res.status_code == 404
 
 def test_delete_prediction_no_auth(client, create_prediction):
-    id = create_prediction["id"]
+    prediction_id = create_prediction["id"]
 
-    res = client.delete(f"/predict/delete/{id}")
+    res = client.delete(f"/predict/delete/{prediction_id}")
 
     assert res.status_code == 401
 
@@ -147,19 +147,19 @@ def test_delete_prediction_not_found(client, auth_header):
     assert data["error_code"] == "PREDICTION_NOT_FOUND"
 
 def test_admin_delete_prediction(client, create_prediction, auth_admin):
-    id = create_prediction["id"]
+    prediction_id = create_prediction["id"]
 
-    res = client.delete(f"/predict/delete/{id}", headers=auth_admin)
+    res = client.delete(f"/predict/delete/{prediction_id}", headers=auth_admin)
 
     assert res.status_code == 200
 
-    res = client.get(f"/predict/history/{id}",headers=auth_admin)
+    res = client.get(f"/predict/history/{prediction_id}",headers=auth_admin)
 
     assert res.status_code == 404
 
 def test_delete_other_user_prediction(client, create_prediction, another_auth_header):
-    id = create_prediction["id"]
+    prediction_id = create_prediction["id"]
 
-    res = client.delete(f"/predict/delete/{id}", headers=another_auth_header)
+    res = client.delete(f"/predict/delete/{prediction_id}", headers=another_auth_header)
 
     assert res.status_code == 404
