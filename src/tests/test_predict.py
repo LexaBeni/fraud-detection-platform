@@ -54,14 +54,16 @@ def test_invalid_predict(client, auth_header, field, value):
 
     assert res.status_code == 422
 
-def test_predict_without_auth(client):
-    data = {
-        "TransactionDT": 86400,
-        "TransactionAmt": 49.50,
-        "ProductCD": "W",
-    }
+def test_get_prediction(client, create_prediction, auth_header):
+    id = create_prediction['id']
 
-    res = client.post("/predict", json=data)
+    res = client.get(f"/predict/history/{id}", headers = auth_header)
 
-    assert res.status_code == 401
+    data = res.json()
 
+    assert res.status_code == 200
+    assert data['id'] == id
+    assert data['created_at'] is not None
+    assert data['threshold'] == 0.18
+    assert data['prediction'] in ["FRAUD", "VALID"]
+    assert data['probability'] <= 0.9
