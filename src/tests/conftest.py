@@ -1,4 +1,5 @@
 import pytest
+from contextlib import asynccontextmanager
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
@@ -28,6 +29,11 @@ class DummyModel():
     def predict_proba(self, X):
         return np.array([[0.1, 0.9]])
 
+@asynccontextmanager
+async def test_lifespan(app):
+    app.state.model = DummyModel()
+    yield
+
 @pytest.fixture
 def client():
 
@@ -35,10 +41,14 @@ def client():
     Base.metadata.create_all(bind=test_engine)
 
     app.dependency_overrides[get_db] = override_get_db
+    original_lifespan = app.router.lifespan_context
+    app.router.lifespan_context = test_lifespan
 
-    with TestClient(app) as client:
-        app.state.model = DummyModel()
-        yield client
+    try:
+        with TestClient(app) as client:
+            yield client
+    finally:
+        app.router.lifespan_context = original_lifespan
 
     app.dependency_overrides.clear()
 
