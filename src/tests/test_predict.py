@@ -67,3 +67,10 @@ def test_get_prediction(client, create_prediction, auth_header):
     assert data['threshold'] == 0.18
     assert data['prediction'] in ["FRAUD", "VALID"]
     assert data['probability'] <= 0.9
+
+def test_get_prediction_no_auth(client, create_prediction):
+    id = create_prediction["id"]
+
+    res = client.get("predict/history/{id}")
+
+    assert res.status_code == 401
