@@ -79,6 +79,7 @@ class PredictionResponse(BaseModel):
     created_at: str
 
 class PredictionHistoryResponse(BaseModel):
+    id: int
     prediction: str
     probability: float
     threshold: float
