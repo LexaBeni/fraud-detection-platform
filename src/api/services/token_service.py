@@ -2,6 +2,7 @@ from datetime import datetime, timedelta, timezone
 from jose import jwt
 from src.api.core.settings import settings
 from dataclasses import dataclass
+from uuid import uuid4
 
 @dataclass
 class TokenData:
@@ -14,7 +15,7 @@ class TokenService:
     def create_token(data: dict, exp_delta: timedelta):
         to_encode = data.copy()
         expire = datetime.now(timezone.utc) + exp_delta
-        to_encode.update({"exp": expire})
+        to_encode.update({"exp": expire, "jti": str(uuid4())})
         encoded_jwt = jwt.encode(to_encode, settings.jwt_secret_key, settings.jwt_algorithm)
 
         return TokenData(token=encoded_jwt, expires_at=expire)
