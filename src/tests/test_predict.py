@@ -112,3 +112,54 @@ def test_get_another_user_predicttion(client, create_prediction, another_auth_he
     
     data = res.json() 
     assert data["error_code"] == "PREDICTION_NOT_FOUND"
+
+def test_delete_prediction(client, create_prediction, auth_header):
+    id = create_prediction["id"]
+    
+    res = client.delete(f"/predict/delete/{id}", headers=auth_header)
+
+    assert res.status_code == 200
+
+    data = res.json()
+
+    assert data == (f"The prediction with id {id} was successfully removed.")
+
+    res = client.get(f"/predict/history/{id}", headers=auth_header)
+
+    assert res.status_code == 404
+
+def test_delete_prediction_no_auth(client, create_prediction):
+    id = create_prediction["id"]
+
+    res = client.delete(f"/predict/delete/{id}")
+
+    assert res.status_code == 401
+
+def test_delete_prediction_not_found(client, auth_header):
+
+    res = client.delete("/predict/delete/999", headers=auth_header)
+
+    assert res.status_code == 404
+
+    data = res.json()
+
+    assert data["status"] == "error"
+    assert data["error_code"] == "PREDICTION_NOT_FOUND"
+
+def test_admin_delete_prediction(client, create_prediction, auth_admin):
+    id = create_prediction["id"]
+
+    res = client.delete(f"/predict/delete/{id}", headers=auth_admin)
+
+    assert res.status_code == 200
+
+    res = client.get(f"/predict/history/{id}",headers=auth_admin)
+
+    assert res.status_code == 404
+
+def test_delete_other_user_prediction(client, create_prediction, another_auth_header):
+    id = create_prediction["id"]
+
+    res = client.delete(f"/predict/delete/{id}", headers=another_auth_header)
+
+    assert res.status_code == 404
