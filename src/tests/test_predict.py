@@ -102,3 +102,13 @@ def test_get_prediction_admin(client, create_prediction, auth_admin):
     assert data['threshold'] == 0.18
     assert data['prediction'] in ["FRAUD", "VALID"]
     assert data['probability'] <= 1
+
+def test_get_another_user_predicttion(client, create_prediction, another_auth_header):
+    id = create_prediction["id"]
+
+    res = client.get(f"/predict/history/{id}", headers=another_auth_header)
+
+    assert res.status_code == 404
+    
+    data = res.json() 
+    assert data["error_code"] == "PREDICTION_NOT_FOUND"
