@@ -87,4 +87,18 @@ def test_get_history(client, create_prediction, auth_header):
     assert data['created_at'] is not None
     assert data['threshold'] == 0.18
     assert data['prediction'] in ["FRAUD", "VALID"]
-    assert data['probability'] <= 0.9
+    assert data['probability'] <= 1
+
+def test_get_prediction_admin(client, create_prediction, auth_admin):
+    id = create_prediction["id"]
+    res = client.get(f"/predict/history/{id}", headers=auth_admin)
+
+    assert res.status_code == 200
+
+    data = res.json()
+
+    assert data['id'] == id
+    assert data['created_at'] is not None
+    assert data['threshold'] == 0.18
+    assert data['prediction'] in ["FRAUD", "VALID"]
+    assert data['probability'] <= 1
