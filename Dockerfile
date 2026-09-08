@@ -11,7 +11,9 @@ FROM python:3.13.7-slim
 
 WORKDIR /app
 
-COPY --from=builder /install /user/local
+ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
+
+COPY --from=builder /install /urc/local
 
 COPY . .
 
