@@ -1,4 +1,4 @@
-FROM python:3.13.7-slim as builder
+FROM python:3.13.7-slim AS builder
 
 WORKDIR /app
 
@@ -13,10 +13,16 @@ WORKDIR /app
 
 ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
 
-COPY --from=builder /install /urc/local
+RUN useradd --create-home --shell /bin/bash appuser
 
-COPY . .
+COPY --from=builder /install /usr/local
+
+COPY --chown=appuser:appuser . .
+
+USER appuser
 
 EXPOSE 8000
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/health', timeout=3)"
 
 CMD ["uvicorn", "src.api.main:app", "--host", "0.0.0.0", "--port", "8000"]
