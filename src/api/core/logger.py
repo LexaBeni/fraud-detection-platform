@@ -1,21 +1,11 @@
 import logging
-from pathlib import Path
+import sys
 
-PROJECT_ROOT = Path(__file__).resolve().parents[3]
-LOG_FILE = PROJECT_ROOT / "app.log"
-
-logger = logging.getLogger()
+logger = logging.getLogger("fraud_api")
 formatter = logging.Formatter(fmt="%(asctime)s [%(levelname)s] %(name)s: %(message)s")
-
-file_handler = logging.FileHandler(LOG_FILE)
-file_handler.setFormatter(formatter)
-
-stream_handler = logging.StreamHandler()
-stream_handler.setFormatter(formatter)
-
-logger.addHandler(file_handler)
-logger.addHandler(stream_handler)
-
 logger.setLevel(logging.INFO)
 
-print(f"[Logger] Logging to: {LOG_FILE}")
+stream_handler = logging.StreamHandler(sys.stdout)
+stream_handler.setFormatter(formatter)
+
+logger.addHandler(stream_handler)
