@@ -20,7 +20,7 @@ services:
   
   migrate:
     build: .
-    container_name: alembic
+    container_name: migrate
     env_file:
       - .env
     depends_on:
