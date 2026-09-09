@@ -7,7 +7,7 @@ on:
 jobs:
     test:
         environment:
-            testing
+            name: testing
         runs-on: ubuntu-latest
         env:
             MYSQL_DATABASE: ${{ secrets.MYSQL_DATABASE }}
@@ -46,9 +46,11 @@ jobs:
               with:
                 python-version: "3.13"
                 cache: "pip"
-            - name: Update pip
-              run: python -m pip install --update pip
+            - name: Upgrade pip
+              run: python -m pip install --upgrade pip
             - name: Install dependencies
-              run: pip install -r docker_requirements.txt
+              run: |
+                pip install -r docker_requirements.txt
+                pip install pytest
             - name: Run tests
               run: pytest src -q
