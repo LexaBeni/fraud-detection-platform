@@ -20,6 +20,7 @@ services:
   
   migrate:
     build: .
+    image: fraud-detection-app
     container_name: migrate
     env_file:
       - .env
@@ -29,7 +30,7 @@ services:
     command: alembic upgrade head
 
   fastapi:
-    build: .
+    image: fraud-detection-app
     container_name: fastapi
     ports:
       - "8000:8000"
