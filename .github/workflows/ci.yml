@@ -10,15 +10,17 @@ jobs:
             name: testing
         runs-on: ubuntu-latest
         env:
+            PYTHONPATH: ${{ github.workspace }}
             MYSQL_DATABASE: ${{ secrets.MYSQL_DATABASE }}
             MYSQL_USER: ${{ secrets.MYSQL_USER }}
             MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
             MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
+            DATABASE_URL: "mysql+pymysql://${{ secrets.MYSQL_USER }}:${{ secrets.MYSQL_PASSWORD }}@localhost:3306/${{ secrets.MYSQL_DATABASE }}"
 
             ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
             ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL }}
 
-            TEST_DATABASE_URL: mysql+pymysql://${{ secrets.MYSQL_USER }}:${{ secrets.MYSQL_PASSWORD }}@localhost:3306/${{ secrets.MYSQL_DATABASE }}
+            TEST_DATABASE_URL: "mysql+pymysql://${{ secrets.MYSQL_USER }}:${{ secrets.MYSQL_PASSWORD }}@localhost:3306/${{ secrets.MYSQL_DATABASE }}"
             JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
             JWT_ALGORITHM: ${{ secrets.JWT_ALGORITHM }}
             ACCESS_TOKEN_EXPIRES_MINUTES: ${{ secrets.ACCESS_TOKEN_EXPIRES_MINUTES }}
@@ -34,7 +36,7 @@ jobs:
                 ports:
                     - 3306:3306
                 options: >-
-                  --health-cmd="mysqladmin ping -h localhost"
+                  --health-cmd="mysqladmin ping -h localhost -u root -p$$MYSQL_ROOT_PASSWORD --silent"
                   --health-interval=10s
                   --health-timeout=5s
                   --health-retries=10
@@ -53,4 +55,4 @@ jobs:
                 pip install -r docker_requirements.txt
                 pip install pytest
             - name: Run tests
-              run: pytest src -q
+              run: pytest -q
