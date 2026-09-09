@@ -6,7 +6,23 @@ on:
 
 jobs:
     test:
+        environment:
+            testing
         runs-on: ubuntu-latest
+        env:
+            MYSQL_DATABASE: ${{ secrets.MYSQL_DATABASE }}
+            MYSQL_USER: ${{ secrets.MYSQL_USER }}
+            MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+            MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
+
+            ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
+            ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL }}
+
+            TEST_DATABASE_URL: ${{ secrets.TEST_DATABASE_URL }}
+            JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+            JWT_ALGORITHM: ${{ secrets.JWT_ALGORITHM }}
+            ACCESS_TOKEN_EXPIRES_MINUTES: ${{ secrets.ACCESS_TOKEN_EXPIRES_MINUTES }}
+            REFRESH_TOKEN_EXPIRES_DAYS: ${{ secrets.REFRESH_TOKEN_EXPIRES_DAYS }}
         steps:
             - name: Checkout repository
               uses: actions/checkout@v4
