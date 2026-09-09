@@ -51,6 +51,6 @@ jobs:
             - name: Install dependencies
               run: |
                 pip install -r docker_requirements.txt
-                pytest
+                pip install pytest
             - name: Run tests
               run: pytest src -q
