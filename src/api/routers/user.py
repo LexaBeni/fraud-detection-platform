@@ -1,15 +1,16 @@
 from fastapi import APIRouter, Depends, status
-from sqlalchemy.orm import Session
-from src.dependencies.database import get_db
-from src.api.services.user_service import UserService
-from src.api.schemas.user import UserCreate, UserResponse
-from src.api.schemas.auth import TokenResponse, RefreshTokenRequest
 from fastapi.security import OAuth2PasswordRequestForm
-from src.dependencies.auth import get_current_user, decode_refresh_token
-from src.api.models.user import User
-from src.api.services.token_service import TokenService
-from src.api.services.refresh_token_service import RefreshTokenService
+from sqlalchemy.orm import Session
+
 from src.api.core.exceptions import InvalidRefreshToken
+from src.api.models.user import User
+from src.api.schemas.auth import RefreshTokenRequest, TokenResponse
+from src.api.schemas.user import UserCreate, UserResponse
+from src.api.services.refresh_token_service import RefreshTokenService
+from src.api.services.token_service import TokenService
+from src.api.services.user_service import UserService
+from src.dependencies.auth import decode_refresh_token, get_current_user
+from src.dependencies.database import get_db
 
 router = APIRouter(prefix="/auth", tags=["User"])
 

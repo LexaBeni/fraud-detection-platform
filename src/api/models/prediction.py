@@ -1,10 +1,12 @@
 from __future__ import annotations
 
-from src.api.core.database import Base
 from datetime import datetime
-from sqlalchemy import Integer, String, Float, DateTime, ForeignKey
-from sqlalchemy.orm import Mapped, mapped_column, relationship
 from typing import TYPE_CHECKING, Literal
+
+from sqlalchemy import DateTime, Float, ForeignKey, Integer, String
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+
+from src.api.core.database import Base
 
 if TYPE_CHECKING:
     from src.api.models.user import User
@@ -55,4 +57,4 @@ class Prediction(Base):
         ForeignKey("users.id"), nullable=True
     )
 
-    user: Mapped["User"] = relationship(back_populates="predictions")
+    user: Mapped[User] = relationship(back_populates="predictions")

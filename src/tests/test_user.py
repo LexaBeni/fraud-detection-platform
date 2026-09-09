@@ -1,6 +1,6 @@
-import pytest
-from src.roles import UserRole
 from src.api.core.settings import settings
+from src.roles import UserRole
+
 
 def user_login(client, user_create):
 

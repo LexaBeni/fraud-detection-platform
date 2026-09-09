@@ -1,5 +1,6 @@
 import pytest
 
+
 def test_predict(client, auth_header):
     data = {
         "TransactionDT": 86400,

@@ -1,10 +1,11 @@
+from datetime import datetime, timezone
+
+from sqlalchemy import select
 from sqlalchemy.orm import Session
+
+from src.api.core.exceptions import InvalidRefreshToken
 from src.api.core.security import hash_token
 from src.api.models.refresh_token import RefreshToken
-from src.api.services.token_service import TokenData
-from sqlalchemy import select
-from datetime import datetime, timezone
-from src.api.core.exceptions import InvalidRefreshToken
 
 
 class RefreshTokenService:

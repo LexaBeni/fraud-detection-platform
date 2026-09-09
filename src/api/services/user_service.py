@@ -1,7 +1,9 @@
-from src.api.models.user import User
 from sqlalchemy import select
-from src.api.core.exceptions import UserAlreadyExists, InvalidCredentials
+
+from src.api.core.exceptions import InvalidCredentials, UserAlreadyExists
 from src.api.core.security import hash_password, verify_password
+from src.api.models.user import User
+
 
 class UserService:
 

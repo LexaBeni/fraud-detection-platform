@@ -24,5 +24,5 @@ settings = Settings()
 
 if not settings.database_url:
     raise RuntimeError(
-        f"DATABASE_URL is not configured."
+        "DATABASE_URL is not configured."
     )

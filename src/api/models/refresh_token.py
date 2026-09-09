@@ -1,10 +1,13 @@
 from __future__ import annotations
 
-from src.api.core.database import Base
 from datetime import datetime
-from sqlalchemy import Boolean, String, Integer, DateTime, ForeignKey
-from sqlalchemy.orm import mapped_column, Mapped, relationship
 from typing import TYPE_CHECKING
+
+from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, String
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+
+from src.api.core.database import Base
+
 if TYPE_CHECKING:
     from src.api.models.user import User
 
@@ -36,4 +39,4 @@ class RefreshToken(Base):
         DateTime, nullable=False, default=datetime.utcnow
     )
 
-    user: Mapped["User"] = relationship(back_populates="refresh_tokens")
+    user: Mapped[User] = relationship(back_populates="refresh_tokens")

@@ -1,8 +1,11 @@
-from datetime import datetime, timedelta, timezone
-from jose import jwt
-from src.api.core.settings import settings
 from dataclasses import dataclass
+from datetime import datetime, timedelta, timezone
 from uuid import uuid4
+
+from jose import jwt
+
+from src.api.core.settings import settings
+
 
 @dataclass
 class TokenData:

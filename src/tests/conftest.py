@@ -1,14 +1,16 @@
-import pytest
 from contextlib import asynccontextmanager
-from fastapi.testclient import TestClient
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy import create_engine
-from src.api.core.settings import settings
-from src.api.core.database import Base
-from src.api.main import app
-from src.dependencies.database import get_db
+
 import numpy as np
+import pytest
+from fastapi.testclient import TestClient
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+
+from src.api.core.database import Base
+from src.api.core.settings import settings
+from src.api.main import app
 from src.api.services.bootstrap_service import ensure_admin
+from src.dependencies.database import get_db
 
 test_engine = create_engine(settings.test_database_url)
 
@@ -23,7 +25,7 @@ def override_get_db():
     finally:
         db.close()
 
-class DummyModel():
+class DummyModel:
     def predict(self, X):
         return np.array([1])
     def predict_proba(self, X):

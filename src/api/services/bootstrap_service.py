@@ -1,9 +1,11 @@
 from sqlalchemy import select
 from sqlalchemy.orm import Session
-from src.api.models.user import User
-from src.api.core.settings import settings
+
 from src.api.core.security import hash_password
+from src.api.core.settings import settings
+from src.api.models.user import User
 from src.roles import UserRole
+
 
 def ensure_admin(db: Session):
     stmt = select(User).where(User.role == "admin")

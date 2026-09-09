@@ -1,10 +1,11 @@
+from sqlalchemy import select
+
+from src.api.core.exceptions import PredictionNotFound
+from src.api.core.logger import logger
 from src.api.functions.features import prepare_all_features
 from src.api.models.prediction import Prediction
-from src.api.core.logger import logger
 from src.roles import UserRole
-from src.api.models.prediction import Prediction
-from sqlalchemy import select
-from src.api.core.exceptions import PredictionNotFound
+
 
 class PredictionService:
 
@@ -22,7 +23,7 @@ class PredictionService:
 
             prob = (self.model.predict_proba(df)[0, 1])
 
-            pred = int((prob > threshold))
+            pred = int(prob > threshold)
 
             label = "FRAUD" if pred == 1 else "VALID"
 

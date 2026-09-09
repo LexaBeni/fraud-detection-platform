@@ -1,24 +1,26 @@
+import time
+from contextlib import asynccontextmanager
+
+import joblib
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
+
+from src.api.core.database import SessionLocal
+from src.api.core.exceptions import AppException
+from src.api.core.logger import logger
+from src.api.core.settings import settings
 from src.api.routers.health import router as health_router
 from src.api.routers.prediction import router as prediction_router
 from src.api.routers.user import router as user_router
-from contextlib import asynccontextmanager
-from src.api.core.logger import logger
-from src.api.core.settings import settings
-import joblib
-from src.api.core.database import Base, engine, SessionLocal
-from src.api.models.prediction import Prediction
-import time
 from src.api.services.bootstrap_service import ensure_admin
-from src.api.core.exceptions import AppException
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     logger.info("Loading model...")
     try:
         app.state.model = joblib.load(settings.model_path)
-    except Exception as e:
+    except Exception:
         logger.exception("Model loading failed")
         raise RuntimeError("Model loading failed")
 

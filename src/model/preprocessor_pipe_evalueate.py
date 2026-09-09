@@ -1,9 +1,15 @@
-from sklearn.linear_model import LogisticRegression
 from sklearn.compose import ColumnTransformer
+from sklearn.impute import SimpleImputer
+from sklearn.metrics import (
+    average_precision_score,
+    f1_score,
+    precision_score,
+    recall_score,
+    roc_auc_score,
+)
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
-from sklearn.impute import SimpleImputer
-from sklearn.metrics import average_precision_score, roc_auc_score, f1_score, precision_score, recall_score
+
 
 def get_preprocessor(X):
     cat_cols = X.select_dtypes(include=['object']).columns.tolist()

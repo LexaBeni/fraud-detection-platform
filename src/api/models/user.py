@@ -1,10 +1,12 @@
 from __future__ import annotations
 
-from src.api.core.database import Base
-from sqlalchemy.orm import mapped_column, Mapped, relationship
-from sqlalchemy import DateTime, String, Integer, Boolean
 from datetime import datetime
 from typing import TYPE_CHECKING
+
+from sqlalchemy import Boolean, DateTime, Integer, String
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+
+from src.api.core.database import Base
 
 if TYPE_CHECKING:
     from src.api.models.prediction import Prediction
@@ -38,6 +40,6 @@ class User(Base):
         DateTime, default = datetime.utcnow
     )
 
-    predictions: Mapped[list["Prediction"]] = relationship(back_populates="user")
+    predictions: Mapped[list[Prediction]] = relationship(back_populates="user")
 
-    refresh_tokens: Mapped[list["RefreshToken"]] = relationship(back_populates="user", cascade="all, delete-orphan")
+    refresh_tokens: Mapped[list[RefreshToken]] = relationship(back_populates="user", cascade="all, delete-orphan")

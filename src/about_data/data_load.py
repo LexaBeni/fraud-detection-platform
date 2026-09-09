@@ -1,6 +1,7 @@
-import pandas as pd
-from dotenv import load_dotenv
 import os
+
+import pandas as pd
+
 
 def load_df(data_path):
     transaction_path = os.path.join(data_path, r"raw/train_transaction.csv/train_transaction.csv")

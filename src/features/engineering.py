@@ -1,4 +1,3 @@
-import pandas as pd
 import numpy as np
 
 base_features = ['TransactionDT', "TransactionAmt", "ProductCD", "P_emaildomain", "R_emaildomain"]
