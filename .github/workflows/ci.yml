@@ -18,7 +18,7 @@ jobs:
             ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
             ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL }}
 
-            TEST_DATABASE_URL: ${{ secrets.TEST_DATABASE_URL }}
+            TEST_DATABASE_URL: mysql+pymysql://${{ secrets.MYSQL_USER }}:${{ secrets.MYSQL_PASSWORD }}@localhost:3306/${{ secrets.MYSQL_DATABASE }}
             JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
             JWT_ALGORITHM: ${{ secrets.JWT_ALGORITHM }}
             ACCESS_TOKEN_EXPIRES_MINUTES: ${{ secrets.ACCESS_TOKEN_EXPIRES_MINUTES }}
