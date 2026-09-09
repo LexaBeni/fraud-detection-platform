@@ -6,7 +6,6 @@ from src.api.models.user import User
 
 
 class UserService:
-
     def __init__(self, db):
         self.db = db
 
@@ -29,10 +28,7 @@ class UserService:
 
         password = hash_password(user.password)
 
-        user_db = User(
-            email=user.email,
-            hashed_password=password
-        )
+        user_db = User(email=user.email, hashed_password=password)
 
         self.db.add(user_db)
         self.db.commit()

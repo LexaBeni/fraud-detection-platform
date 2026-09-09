@@ -16,6 +16,7 @@ test_engine = create_engine(settings.test_database_url)
 
 test_session_local = sessionmaker(bind=test_engine, autoflush=False, autocommit=False)
 
+
 def override_get_db():
     db = test_session_local()
 
@@ -25,16 +26,20 @@ def override_get_db():
     finally:
         db.close()
 
+
 class DummyModel:
     def predict(self, X):
         return np.array([1])
+
     def predict_proba(self, X):
         return np.array([[0.1, 0.9]])
+
 
 @asynccontextmanager
 async def test_lifespan(app):
     app.state.model = DummyModel()
     yield
+
 
 @pytest.fixture
 def client():
@@ -54,6 +59,7 @@ def client():
 
     app.dependency_overrides.clear()
 
+
 @pytest.fixture
 def user_create(client):
     data = {"email": "test@test.com", "password": "test"}
@@ -64,9 +70,10 @@ def user_create(client):
 
     assert res.status_code == 201
 
-    user['password'] = data['password']
+    user["password"] = data["password"]
 
     return user
+
 
 @pytest.fixture
 def another_user_create(client):
@@ -78,9 +85,10 @@ def another_user_create(client):
 
     assert res.status_code == 201
 
-    user['password'] = data['password']
+    user["password"] = data["password"]
 
     return user
+
 
 @pytest.fixture
 def create_admin(client):
@@ -90,21 +98,32 @@ def create_admin(client):
     finally:
         db.close()
 
+
 @pytest.fixture
 def user_login(client, user_create):
 
-    res = client.post("/auth/login", data = {"username": user_create['email'], "password": user_create['password']})
+    res = client.post(
+        "/auth/login",
+        data={"username": user_create["email"], "password": user_create["password"]},
+    )
 
     tokens = res.json()
 
     assert res.status_code == 200
 
     return tokens
+
 
 @pytest.fixture
 def another_user_login(client, another_user_create):
 
-    res = client.post("/auth/login", data = {"username": another_user_create['email'], "password": another_user_create['password']})
+    res = client.post(
+        "/auth/login",
+        data={
+            "username": another_user_create["email"],
+            "password": another_user_create["password"],
+        },
+    )
 
     tokens = res.json()
 
@@ -112,33 +131,37 @@ def another_user_login(client, another_user_create):
 
     return tokens
 
+
 @pytest.fixture
 def login_admin(client, create_admin):
-    res = client.post("/auth/login", data={"username": create_admin.email, "password": settings.admin_password})
+    res = client.post(
+        "/auth/login",
+        data={"username": create_admin.email, "password": settings.admin_password},
+    )
 
     assert res.status_code == 200
 
     return res.json()
 
+
 @pytest.fixture
 def auth_header(user_login):
-    return {"Authorization": f"Bearer {user_login["access_token"]}"}
+    return {"Authorization": f"Bearer {user_login['access_token']}"}
+
 
 @pytest.fixture
 def another_auth_header(another_user_login):
-    return {"Authorization": f"Bearer {another_user_login["access_token"]}"}
+    return {"Authorization": f"Bearer {another_user_login['access_token']}"}
+
 
 @pytest.fixture
 def auth_admin(login_admin):
-    return {"Authorization": f"Bearer {login_admin["access_token"]}"}
+    return {"Authorization": f"Bearer {login_admin['access_token']}"}
+
 
 @pytest.fixture
 def create_prediction(client, auth_header):
-    data = {
-        "TransactionDT": 86400,
-        "TransactionAmt": 49.50,
-        "ProductCD": "W"
-    }
+    data = {"TransactionDT": 86400, "TransactionAmt": 49.50, "ProductCD": "W"}
 
     res = client.post("/predict", json=data, headers=auth_header)
 
@@ -147,4 +170,3 @@ def create_prediction(client, auth_header):
     result = res.json()
 
     return result
-    

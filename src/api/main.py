@@ -26,12 +26,14 @@ async def lifespan(app: FastAPI):
 
     with SessionLocal() as db:
         ensure_admin(db)
-        
+
     yield
 
     logger.info("Server is shutting down...")
 
+
 app = FastAPI(title="Fraud Detection API", version="1.0.0", lifespan=lifespan)
+
 
 @app.middleware("http")
 async def middleware(request, call_next):
@@ -43,20 +45,26 @@ async def middleware(request, call_next):
 
     response.headers["X-Process-Time"] = str(duration)
 
-    logger.info(f"{request.method} {request.url.path} completed in {duration:.4f} seconds")
+    logger.info(
+        f"{request.method} {request.url.path} completed in {duration:.4f} seconds"
+    )
 
     return response
+
 
 app.include_router(health_router)
 app.include_router(prediction_router)
 app.include_router(user_router)
 
+
 @app.exception_handler(AppException)
 def app_exception(requst: Request, exc: AppException):
-    return JSONResponse(status_code=exc.status_code,
-                        content={
-                            "status": "error",
-                            "error_code": exc.error_code,
-                            "message": exc.message,
-                            "detail": exc.details
-                        })
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={
+            "status": "error",
+            "error_code": exc.error_code,
+            "message": exc.message,
+            "detail": exc.details,
+        },
+    )

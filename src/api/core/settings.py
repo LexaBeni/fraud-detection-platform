@@ -23,6 +23,4 @@ class Settings(BaseSettings):
 settings = Settings()
 
 if not settings.database_url:
-    raise RuntimeError(
-        "DATABASE_URL is not configured."
-    )
+    raise RuntimeError("DATABASE_URL is not configured.")

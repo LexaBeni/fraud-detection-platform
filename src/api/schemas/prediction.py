@@ -4,26 +4,42 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
 class PredictionRequest(BaseModel):
-    TransactionDT: int = Field(ge=0, description="Timedelta from a given reference datetime")
+    TransactionDT: int = Field(
+        ge=0, description="Timedelta from a given reference datetime"
+    )
     TransactionAmt: float = Field(ge=0, description="Transaction payment amount in USD")
     ProductCD: str = Field(description="Product code, the product for each transaction")
     P_emaildomain: str | None = Field(None, description="Purchaser email domain")
     R_emaildomain: str | None = Field(None, description="Recipient email domain")
-    card1: int | None = Field(None, description="Payment card information (e.g., card series)", ge=1000)
-    card2: int | None = Field(None, description="Payment card information (e.g., bank ID)", ge=100)
-    card4: str | None = Field(None, description="Card type (e.g., visa, mastercard, discover, amex)")
-    card5: int | None = Field(None, description="Payment card information (e.g., bank category)", ge=100)
+    card1: int | None = Field(
+        None, description="Payment card information (e.g., card series)", ge=1000
+    )
+    card2: int | None = Field(
+        None, description="Payment card information (e.g., bank ID)", ge=100
+    )
+    card4: str | None = Field(
+        None, description="Card type (e.g., visa, mastercard, discover, amex)"
+    )
+    card5: int | None = Field(
+        None, description="Payment card information (e.g., bank category)", ge=100
+    )
     card6: str | None = Field(None, description="Card category (e.g., credit, debit)")
     addr1: int | None = Field(None, description="Billing region/zip code")
     addr2: int | None = Field(None, description="Billing country code")
-    dist1: float | None = Field(None, description="Distance between billing address and zip code", ge=0)
-    dist2: float | None = Field(None, description="Distance from alternative address", ge=0)
-    D1: float | None = Field(None, description="Timedelta, such as days since last transaction", ge=0)
+    dist1: float | None = Field(
+        None, description="Distance between billing address and zip code", ge=0
+    )
+    dist2: float | None = Field(
+        None, description="Distance from alternative address", ge=0
+    )
+    D1: float | None = Field(
+        None, description="Timedelta, such as days since last transaction", ge=0
+    )
 
     @field_validator("ProductCD")
     @classmethod
     def validate_product(cls, v):
-        allowed = {'W', 'H', 'C', 'S', 'R'}
+        allowed = {"W", "H", "C", "S", "R"}
         if v not in allowed:
             raise ValueError(f"ProductCD must be one of {allowed}")
         return v
@@ -33,10 +49,10 @@ class PredictionRequest(BaseModel):
     def validate_card4(cls, v):
         if not v:
             return v
-        allowed = {'visa', 'mastercard', 'american express', 'discover'}
+        allowed = {"visa", "mastercard", "american express", "discover"}
 
         if v.lower() not in allowed:
-             raise ValueError(f"card4 must be one of {allowed}")
+            raise ValueError(f"card4 must be one of {allowed}")
         return v.lower()
 
     @field_validator("card6")
@@ -44,7 +60,7 @@ class PredictionRequest(BaseModel):
     def validate_card6(cls, v):
         if not v:
             return v
-        allowed = ('credit', 'debit', 'debit or credit', 'charge card')
+        allowed = ("credit", "debit", "debit or credit", "charge card")
 
         if v.lower() not in allowed:
             raise ValueError(f"card6 must be one of {allowed}")
@@ -67,17 +83,19 @@ class PredictionRequest(BaseModel):
                 "addr2": 87,
                 "dist1": 19.0,
                 "dist2": None,
-                "D1": 14.0
+                "D1": 14.0,
             }
         }
     )
-    
+
+
 class PredictionResponse(BaseModel):
     id: int
     prediction: str
     probability: float
     threshold: float
     created_at: str
+
 
 class PredictionHistoryResponse(BaseModel):
     id: int

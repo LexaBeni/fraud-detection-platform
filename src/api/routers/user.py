@@ -14,15 +14,20 @@ from src.dependencies.database import get_db
 
 router = APIRouter(prefix="/auth", tags=["User"])
 
+
 @router.get("/me", response_model=UserResponse)
 def get_me(current_user: User = Depends(get_current_user)):
     return current_user
 
-@router.post("/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
+
+@router.post(
+    "/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED
+)
 def register(user: UserCreate, db: Session = Depends(get_db)):
     service = UserService(db=db)
 
     return service.register_user(user)
+
 
 @router.post("/login", response_model=TokenResponse, status_code=status.HTTP_200_OK)
 def login(data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
@@ -36,15 +41,17 @@ def login(data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get
     refresh_token = TokenService.create_refresh_token(user_db)
 
     refresh_token_service = RefreshTokenService(db)
-    
-    refresh_token_service.append_refresh_token(refresh_token=refresh_token, user=user_db)
+
+    refresh_token_service.append_refresh_token(
+        refresh_token=refresh_token, user=user_db
+    )
 
     db.commit()
 
     return TokenResponse(
-        access_token=access_token.token,
-        refresh_token=refresh_token.token
+        access_token=access_token.token, refresh_token=refresh_token.token
     )
+
 
 @router.post("/refresh", response_model=TokenResponse)
 def refresh(data: RefreshTokenRequest, db: Session = Depends(get_db)):
@@ -55,7 +62,7 @@ def refresh(data: RefreshTokenRequest, db: Session = Depends(get_db)):
 
         user_service = UserService(db)
 
-        user_id = payload['sub']
+        user_id = payload["sub"]
 
         user = user_service.get_user_by_id(int(user_id))
 
@@ -64,7 +71,9 @@ def refresh(data: RefreshTokenRequest, db: Session = Depends(get_db)):
 
         refresh_token_service = RefreshTokenService(db)
 
-        refresh_token_db = refresh_token_service.get_refresh_token(refresh_token=refresh_token)
+        refresh_token_db = refresh_token_service.get_refresh_token(
+            refresh_token=refresh_token
+        )
 
         if refresh_token_db.user_id != user.id:
             raise InvalidRefreshToken()
@@ -74,21 +83,23 @@ def refresh(data: RefreshTokenRequest, db: Session = Depends(get_db)):
         new_access_token = TokenService.create_access_token(user)
         new_refresh_token = TokenService.create_refresh_token(user)
 
-        refresh_token_service.append_refresh_token(refresh_token=new_refresh_token, user=user)
+        refresh_token_service.append_refresh_token(
+            refresh_token=new_refresh_token, user=user
+        )
 
         db.commit()
 
         return TokenResponse(
-            access_token=new_access_token.token,
-            refresh_token=new_refresh_token.token
-            )
+            access_token=new_access_token.token, refresh_token=new_refresh_token.token
+        )
 
     except Exception:
         db.rollback()
         raise
 
+
 @router.post("/logout")
-def logout(data: RefreshTokenRequest, db:Session = Depends(get_db)):
+def logout(data: RefreshTokenRequest, db: Session = Depends(get_db)):
     service = RefreshTokenService(db=db)
 
     try:
@@ -105,8 +116,8 @@ def logout(data: RefreshTokenRequest, db:Session = Depends(get_db)):
 
         db.commit()
 
-        return f"The user with id {payload["sub"]} was successfully logged out!"
-    
+        return f"The user with id {payload['sub']} was successfully logged out!"
+
     except Exception:
         db.rollback()
         raise

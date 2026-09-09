@@ -12,4 +12,3 @@ def prepare_all_features(payload: PredictionRequest):
     df = add_all_features(df)
 
     return df
-

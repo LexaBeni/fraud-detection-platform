@@ -11,20 +11,27 @@ from src.dependencies.database import get_db
 
 def decode_token(token: str):
     try:
-        payload = jwt.decode(token=token, key=settings.jwt_secret_key, algorithms=[settings.jwt_algorithm])
+        payload = jwt.decode(
+            token=token,
+            key=settings.jwt_secret_key,
+            algorithms=[settings.jwt_algorithm],
+        )
         sub = payload.get("sub")
         if not sub:
             raise InvalidCredentials()
     except ExpiredSignatureError:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token has expired")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Token has expired"
+        )
 
     except JWEError:
         raise InvalidCredentials()
-    
+
     except Exception:
         raise InvalidCredentials()
 
     return payload
+
 
 def decode_access_token(token: str):
     payload = decode_token(token)
@@ -36,7 +43,8 @@ def decode_access_token(token: str):
 
     return payload
 
-def decode_refresh_token(token:str):
+
+def decode_refresh_token(token: str):
 
     payload = decode_token(token)
 
@@ -45,7 +53,10 @@ def decode_refresh_token(token:str):
 
     return payload
 
-def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
+
+def get_current_user(
+    token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)
+):
     from src.api.services.user_service import UserService
 
     service = UserService(db=db)

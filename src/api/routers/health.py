@@ -7,8 +7,9 @@ from src.dependencies.model import get_model
 
 router = APIRouter(prefix="/health", tags=["Health"])
 
+
 @router.get("")
-def health_check(db: Session = Depends(get_db), model = Depends(get_model)):
+def health_check(db: Session = Depends(get_db), model=Depends(get_model)):
     model_status = model is not None
 
     try:

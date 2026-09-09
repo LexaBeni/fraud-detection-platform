@@ -15,9 +15,9 @@ def ensure_admin(db: Session):
     if not admin:
         admin_db = User(
             email=settings.admin_email,
-            hashed_password = hash_password(settings.admin_password),
-            role = UserRole.ADMIN,
-        ) 
+            hashed_password=hash_password(settings.admin_password),
+            role=UserRole.ADMIN,
+        )
 
         db.add(admin_db)
         db.commit()

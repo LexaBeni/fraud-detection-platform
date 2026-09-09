@@ -11,29 +11,19 @@ from src.api.core.database import Base
 if TYPE_CHECKING:
     from src.api.models.user import User
 
-class RefreshToken(Base):
 
+class RefreshToken(Base):
     __tablename__ = "refresh_tokens"
 
-    id: Mapped[int] = mapped_column(
-        Integer, primary_key=True, autoincrement=True
-    )
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
 
-    user_id: Mapped[int] = mapped_column(
-        ForeignKey("users.id"), nullable=False
-    )
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
 
-    token_hash: Mapped[str] = mapped_column(
-        String(128), nullable=False, unique=True
-    )
+    token_hash: Mapped[str] = mapped_column(String(128), nullable=False, unique=True)
 
-    expires_at: Mapped[datetime] = mapped_column(
-        DateTime, nullable=False
-    )
+    expires_at: Mapped[datetime] = mapped_column(DateTime, nullable=False)
 
-    revoked: Mapped[bool] = mapped_column(
-        Boolean, default=False, nullable=False
-    )
+    revoked: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
 
     created_at: Mapped[datetime] = mapped_column(
         DateTime, nullable=False, default=datetime.utcnow
