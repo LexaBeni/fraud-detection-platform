@@ -1,8 +1,9 @@
 from fastapi import APIRouter, Depends, status
 from fastapi.security import OAuth2PasswordRequestForm
+from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
-from src.api.core.exceptions import InvalidRefreshToken
+from src.api.core.exceptions import InvalidCredentials, InvalidRefreshToken
 from src.api.models.user import User
 from src.api.schemas.auth import RefreshTokenRequest, TokenResponse
 from src.api.schemas.user import UserCreate, UserResponse
@@ -93,7 +94,14 @@ def refresh(data: RefreshTokenRequest, db: Session = Depends(get_db)):
             access_token=new_access_token.token, refresh_token=new_refresh_token.token
         )
 
-    except Exception:
+    except (
+        InvalidCredentials,
+        InvalidRefreshToken,
+        SQLAlchemyError,
+        KeyError,
+        TypeError,
+        ValueError,
+    ):
         db.rollback()
         raise
 
@@ -118,6 +126,13 @@ def logout(data: RefreshTokenRequest, db: Session = Depends(get_db)):
 
         return f"The user with id {payload['sub']} was successfully logged out!"
 
-    except Exception:
+    except (
+        InvalidCredentials,
+        InvalidRefreshToken,
+        SQLAlchemyError,
+        KeyError,
+        TypeError,
+        ValueError,
+    ):
         db.rollback()
         raise

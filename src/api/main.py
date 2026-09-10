@@ -20,7 +20,13 @@ async def lifespan(app: FastAPI):
     logger.info("Loading model...")
     try:
         app.state.model = joblib.load(settings.model_path)
-    except Exception:
+    except (
+        AttributeError,
+        EOFError,
+        ImportError,
+        OSError,
+        ValueError,
+    ):
         logger.exception("Model loading failed")
         raise RuntimeError("Model loading failed")
 

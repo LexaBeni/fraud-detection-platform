@@ -1,6 +1,5 @@
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, Query
 
-from src.api.core.logger import logger
 from src.api.schemas.prediction import (
     PredictionHistoryResponse,
     PredictionRequest,
@@ -21,13 +20,8 @@ def predict(
     db=Depends(get_db),
     user=Depends(get_current_user),
 ):
-    try:
-        service = PredictionService(model=model, db=db)
-        return service.predict(df, user)
-    except Exception as e:
-        logger.exception(e)
-
-        raise HTTPException(status_code=500, detail="Prediction failed.")
+    service = PredictionService(model=model, db=db)
+    return service.predict(df, user)
 
 
 @router.get("/history/{id}", response_model=PredictionHistoryResponse)

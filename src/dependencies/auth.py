@@ -1,6 +1,6 @@
 from fastapi import Depends, HTTPException, status
 from jose import jwt
-from jose.exceptions import ExpiredSignatureError, JWEError
+from jose.exceptions import ExpiredSignatureError, JWTError
 from sqlalchemy.orm import Session
 
 from src.api.core.exceptions import InvalidCredentials
@@ -24,10 +24,7 @@ def decode_token(token: str):
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Token has expired"
         )
 
-    except JWEError:
-        raise InvalidCredentials()
-
-    except Exception:
+    except JWTError:
         raise InvalidCredentials()
 
     return payload

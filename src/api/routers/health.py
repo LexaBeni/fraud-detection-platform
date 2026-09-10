@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy import text
+from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
 from src.dependencies.database import get_db
@@ -15,7 +16,7 @@ def health_check(db: Session = Depends(get_db), model=Depends(get_model)):
     try:
         db.execute(text("SELECT 1"))
         database_status = True
-    except Exception:
+    except SQLAlchemyError:
         database_status = False
 
     is_healthy = model_status and database_status

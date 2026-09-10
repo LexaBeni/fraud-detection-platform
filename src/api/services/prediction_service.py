@@ -1,4 +1,5 @@
 from sqlalchemy import select
+from sqlalchemy.exc import SQLAlchemyError
 
 from src.api.core.exceptions import PredictionNotFound
 from src.api.core.logger import logger
@@ -45,7 +46,14 @@ class PredictionService:
                 "threshold": prediction_db.threshold,
                 "created_at": str(prediction_db.created_at),
             }
-        except Exception as e:
+        except (
+            AttributeError,
+            IndexError,
+            KeyError,
+            TypeError,
+            ValueError,
+            SQLAlchemyError,
+        ) as e:
             logger.exception(e)
             self.db.rollback()
             raise ValueError("Invalid payload or prediction processing failed.")
