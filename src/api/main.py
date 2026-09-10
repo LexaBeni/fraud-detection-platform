@@ -64,7 +64,7 @@ app.include_router(user_router)
 
 
 @app.exception_handler(AppException)
-def app_exception(requst: Request, exc: AppException):
+def app_exception(request: Request, exc: AppException):
     return JSONResponse(
         status_code=exc.status_code,
         content={

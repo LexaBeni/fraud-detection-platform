@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import TYPE_CHECKING, Literal
 
 from sqlalchemy import DateTime, Float, ForeignKey, Integer, String
@@ -28,7 +28,7 @@ class Prediction(Base):
     threshold: Mapped[float] = mapped_column(Float, nullable=False)
 
     created_at: Mapped[datetime] = mapped_column(
-        DateTime, default=datetime.utcnow(), nullable=False
+        DateTime, default=lambda: datetime.now(timezone.utc), nullable=False
     )
 
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=True)
