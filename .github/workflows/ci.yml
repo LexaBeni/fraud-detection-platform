@@ -62,11 +62,11 @@ jobs:
             - name: Checkout repository
               uses: actions/checkout@v4
             - name: Run Ruff check
-              uses: astral-sh/ruff-action@v4
+              uses: astral-sh/ruff-action@v4.1.0
               with:
                 version: latest
             - name: Run Ruff format
-              uses: astral-sh/ruff-action@v4
+              uses: astral-sh/ruff-action@v4.1.0
               with:
                 version: latest
                 args: "format --check"
