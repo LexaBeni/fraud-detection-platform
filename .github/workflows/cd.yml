@@ -25,7 +25,9 @@ jobs:
                 push: false
                 tags: ${{ secrets.DOCKERHUB_USERNAME }}/fastapi-fraud-detection:latest
     ecr:
+      needs: docker
       name: Build and Push Image
+      environment: aws
       runs-on: ubuntu-latest
       permissions:
         id-token: write
@@ -37,7 +39,7 @@ jobs:
           uses: aws-actions/configure-aws-credentials@v6
           with:
             role-to-assume: ${{ vars.AWS_ROLE_ARN }}
-            aws-region: ${{ vars.AWS_REGION}}
+            aws-region: ${{ vars.AWS_REGION }}
         - name: Login to ECR
           id: login-ecr
           uses: aws-actions/amazon-ecr-login@v2    
