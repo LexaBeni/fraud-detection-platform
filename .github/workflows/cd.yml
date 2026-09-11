@@ -22,5 +22,5 @@ jobs:
               uses: docker/build-push-action@v7
               with:
                 context: .
-                push: true
+                push: false
                 tags: ${{ secrets.DOCKERHUB_USERNAME }}/fastapi-fraud-detection:latest
