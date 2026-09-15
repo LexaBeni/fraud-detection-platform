@@ -21,7 +21,6 @@ COPY --from=builder /install /usr/local
 
 COPY --chown=appuser:appuser . .
 
-RUN test -f /app/models/fraud_detection_model.joblib
 
 USER appuser
 
