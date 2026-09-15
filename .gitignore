@@ -231,8 +231,6 @@ data/
 
 *mlartifacts/
 
-*.joblib
-
 *alembic/
 
 alembic.ini
