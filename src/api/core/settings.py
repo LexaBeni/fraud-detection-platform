@@ -11,6 +11,7 @@ class Settings(BaseSettings):
     access_token_expires_minutes: int = 1
     refresh_token_expires_days: int = 1
     test_database_url: str = ""
+    database_server_url: str = ""
 
     model_config = SettingsConfigDict(
         env_file=".env",
