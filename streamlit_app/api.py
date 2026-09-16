@@ -4,7 +4,7 @@ API_URL = "http://localhost:8000"
 
 
 def predict(transaction: dict):
-    response = requests.post(f"{API_URL}/predict", json=predict)
+    response = requests.post(f"{API_URL}/predict", json=transaction)
 
     response.raise_for_status()
 
