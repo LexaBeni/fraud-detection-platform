@@ -1,5 +1,6 @@
 import time
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 import joblib
 from fastapi import FastAPI, Request
@@ -19,6 +20,8 @@ from src.api.services.bootstrap_service import ensure_admin
 async def lifespan(app: FastAPI):
     logger.info("Loading model...")
     try:
+        model_path = Path(settings.model_path)
+        logger.info("Loading model from %s", model_path)
         app.state.model = joblib.load(settings.model_path)
     except (
         AttributeError,
@@ -26,9 +29,9 @@ async def lifespan(app: FastAPI):
         ImportError,
         OSError,
         ValueError,
-    ):
-        logger.exception("Model loading failed")
-        raise RuntimeError("Model loading failed")
+    ) as exc:
+        logger.exception("Model loading failed from %s", settings.model_path)
+        raise RuntimeError(f"Model loading failed from {settings.model_path}") from exc
 
     with SessionLocal() as db:
         ensure_admin(db)
