@@ -36,3 +36,31 @@ def predict(transaction: dict):
     response.raise_for_status()
 
     return response.json()
+
+
+def delete(id: int):
+    response = requests.delete(
+        f"{API_URL}/predict/delete/{id}", headers=get_auth_headers()
+    )
+
+    response.raise_for_status()
+
+    return response.json()
+
+
+def get_prediction(id: int):
+    response = requests.get(
+        f"{API_URL}/predict/history/{id}", headers=get_auth_headers()
+    )
+
+    response.raise_for_status()
+
+    return response.json()
+
+
+def get_history():
+    response = requests.get(f"{API_URL}/predict/history", headers=get_auth_headers())
+
+    response.raise_for_status()
+
+    return response.json()
