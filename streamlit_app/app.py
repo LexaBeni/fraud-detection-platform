@@ -1,6 +1,35 @@
 import streamlit as st
 
+from streamlit_app.api import login_user, predict, register_user
+
 st.set_page_config(page_title="Fraud Detection", layout="wide")
+
+if "access_token" not in st.session_state:
+    st.session_state["access_token"] = None
+
+if not st.session_state["access_token"]:
+    st.title("Fraud Detection System - Login")
+    tab1, tab2 = st.tabs(["Login", "Register"])
+    with tab1, st.form("login"):
+        username = st.text_input("Email")
+        password = st.text_input("Password")
+        if st.form_submit_button("Login"):
+            data = login_user(username, password)
+            st.session_state["access_token"] = data["access_token"]
+            st.success("Successfully logged in!")
+            st.rerun()
+    with tab2, st.form("Register"):
+        email = st.text_input("Email")
+        password = st.text_input("Password")
+        if st.form_submit_button("Register"):
+            register_user(email, password)
+            st.success("Registration successful! Please login.")
+
+else:
+    with st.sidebar:
+        st.write("Logged in")
+        if st.button("Log out"):
+            st.session_state["access_token"] = None
 
 st.title("Fraud Detection")
 
@@ -43,4 +72,24 @@ with st.form("Prediction form"):
 
     button = st.form_submit_button("Submit")
     if button:
-        st.success("FIne")
+        transaction = {
+            "TransactionDT": transaction_dt,
+            "TransactionAmt": transaction_amt,
+            "ProductCD": product_cd,
+            "P_emaildomain": p_emaildomain,
+            "R_emaildomain": r_emaildomain,
+            "card1": card1,
+            "card2": card2,
+            "card4": card4,
+            "card5": card5,
+            "card6": card6,
+            "addr1": addr1,
+            "addr2": addr2,
+            "dist1": dist1,
+            "dist2": dist2,
+            "D1": d1,
+        }
+
+        result = predict(transaction)
+
+        st.json(result)
