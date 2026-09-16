@@ -43,4 +43,4 @@ with st.form("Prediction form"):
 
     button = st.form_submit_button("Submit")
     if button:
-        st.success("Fine")
+        st.success("FIne")
