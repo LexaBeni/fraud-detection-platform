@@ -1,0 +1,130 @@
+{
+    "taskDefinitionArn": "arn:aws:ecs:eu-central-1:773658094755:task-definition/fraud-api:12",
+    "containerDefinitions": [
+        {
+            "name": "fraud-api",
+            "image": "773658094755.dkr.ecr.eu-central-1.amazonaws.com/fastapi-fraud-detection@sha256:b0c8b19ad3824056145f4f20317fc66fc71afc6cd73f80aba3a78658f2798dfc",
+            "cpu": 0,
+            "portMappings": [
+                {
+                    "containerPort": 8000,
+                    "hostPort": 8000,
+                    "protocol": "tcp",
+                    "name": "fraud-api-8000-tcp",
+                    "appProtocol": "http"
+                }
+            ],
+            "essential": true,
+            "environment": [],
+            "environmentFiles": [],
+            "mountPoints": [],
+            "volumesFrom": [],
+            "secrets": [
+                {
+                    "name": "ACCESS_TOKEN_EXPIRES_MINUTES",
+                    "valueFrom": "arn:aws:ssm:eu-central-1:773658094755:parameter/fraud-api/ACCESS_TOKEN_EXPIRES_MINUTES"
+                },
+                {
+                    "name": "ADMIN_EMAIL",
+                    "valueFrom": "arn:aws:ssm:eu-central-1:773658094755:parameter/fraud-api/ADMIN_EMAIL"
+                },
+                {
+                    "name": "ADMIN_PASSWORD",
+                    "valueFrom": "arn:aws:ssm:eu-central-1:773658094755:parameter/fraud-api/ADMIN_PASSWORD"
+                },
+                {
+                    "name": "DATABASE_SERVER_URL",
+                    "valueFrom": "/fraud-api/DATABASE_SERVER_URL"
+                },
+                {
+                    "name": "DATABASE_URL",
+                    "valueFrom": "arn:aws:ssm:eu-central-1:773658094755:parameter/fraud-api/DATABASE_URL"
+                },
+                {
+                    "name": "JWT_ALGORITHM",
+                    "valueFrom": "arn:aws:ssm:eu-central-1:773658094755:parameter/fraud-api/JWT_ALGORITHM"
+                },
+                {
+                    "name": "JWT_SECRET_KEY",
+                    "valueFrom": "arn:aws:ssm:eu-central-1:773658094755:parameter/fraud-api/JWT_SECRET_KEY"
+                },
+                {
+                    "name": "MODEL_PATH",
+                    "valueFrom": "arn:aws:ssm:eu-central-1:773658094755:parameter/fraud-api/MODEL_PATH"
+                },
+                {
+                    "name": "REFRESH_TOKEN_EXPIRES_DAYS",
+                    "valueFrom": "arn:aws:ssm:eu-central-1:773658094755:parameter/fraud-api/REFRESH_TOKEN_EXPIRES_DAYS"
+                }
+            ],
+            "ulimits": [],
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-group": "/ecs/fraud-api",
+                    "awslogs-create-group": "true",
+                    "awslogs-region": "eu-central-1",
+                    "awslogs-stream-prefix": "ecs"
+                },
+                "secretOptions": []
+            },
+            "systemControls": []
+        }
+    ],
+    "family": "fraud-api",
+    "taskRoleArn": "arn:aws:iam::773658094755:role/ecsTaskExecutionRole-fraud-api",
+    "executionRoleArn": "arn:aws:iam::773658094755:role/ecsTaskExecutionRole-fraud-api",
+    "networkMode": "awsvpc",
+    "volumes": [],
+    "requiresAttributes": [
+        {
+            "name": "com.amazonaws.ecs.capability.logging-driver.awslogs"
+        },
+        {
+            "name": "ecs.capability.execution-role-awslogs"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.ecr-auth"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.19"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.21"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.task-iam-role"
+        },
+        {
+            "name": "ecs.capability.execution-role-ecr-pull"
+        },
+        {
+            "name": "ecs.capability.secrets.ssm.environment-variables"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.18"
+        },
+        {
+            "name": "ecs.capability.task-eni"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.29"
+        }
+    ],
+    "placementConstraints": [],
+    "compatibilities": [
+        "EC2",
+        "FARGATE",
+        "MANAGED_INSTANCES"
+    ],
+    "runtimePlatform": {
+        "cpuArchitecture": "X86_64",
+        "operatingSystemFamily": "LINUX"
+    },
+    "requiresCompatibilities": [
+        "FARGATE"
+    ],
+    "cpu": "256",
+    "memory": "512",
+    "enableFaultInjection": false
+}

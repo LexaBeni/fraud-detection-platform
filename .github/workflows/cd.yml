@@ -32,6 +32,8 @@ jobs:
       permissions:
         id-token: write
         contents: read
+      outputs:
+        image: ${{ steps.login-ecr.outputs.registry }}/fastapi-fraud-detection:${{ github.sha }}
       steps:
         - name: Checkout repository
           uses: actions/checkout@v4
@@ -52,3 +54,34 @@ jobs:
             tags: |
               ${{ steps.login-ecr.outputs.registry }}/fastapi-fraud-detection:${{ github.sha }}
               ${{ steps.login-ecr.outputs.registry }}/fastapi-fraud-detection:latest
+    deploy:
+      needs: ecr
+      name: Deploy to ECS
+      environment: aws
+      runs-on: ubuntu-latest
+      permissions:
+        id-token: write
+        contents: read
+      steps:
+        - name: Checkout repository
+          uses: actions/checkout@v4
+        - name: Configure AWS credentials
+          uses: aws-actions/configure-aws-credentials@v6
+          with:
+            role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+            aws-region: ${{ vars.AWS_REGION }}
+            audience: sts.amazonaws.com
+        - name: Configure new task definition
+          id: task-def
+          uses: aws-actions/amazon-ecs-render-task-definition@v1
+          with:
+            task-definition: fraud-api.json
+            container-name: fraud-api
+            image: ${{ needs.ecr.outputs.image }}
+        - name: Deploy task definition
+          uses: aws-actions/amazon-ecs-deploy-task-definition@v2
+          with:
+            task-definition: ${{ steps.task-def.outputs.task-definition }}
+            service: fraud-api-service-w30jxco7
+            cluster: fraud-detection-cluster
+            wait-for-service-stability: true
