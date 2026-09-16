@@ -34,9 +34,7 @@ def register(user: UserCreate, db: Session = Depends(get_db)):
 def login(data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     service = UserService(db=db)
 
-    user = UserCreate(email=data.username, password=data.password)
-
-    user_db = service.login_user(user)
+    user_db = service.login_user(email=data.username, password=data.password)
 
     access_token = TokenService.create_access_token(user_db)
     refresh_token = TokenService.create_refresh_token(user_db)

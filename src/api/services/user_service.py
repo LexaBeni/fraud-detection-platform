@@ -36,14 +36,14 @@ class UserService:
 
         return user_db
 
-    def login_user(self, user):
+    def login_user(self, email: str, password: str):
 
-        user_db = self.get_user_by_email(user.email)
+        user_db = self.get_user_by_email(email)
 
         if not user_db:
             raise InvalidCredentials()
 
-        if not verify_password(user.password, user_db.hashed_password):
+        if not verify_password(password, user_db.hashed_password):
             raise InvalidCredentials()
 
         return user_db
