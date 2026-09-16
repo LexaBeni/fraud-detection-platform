@@ -8,7 +8,7 @@ def get_auth_headers():
     token = st.session_state.get("access_token")
     if token:
         return {"Authorization": f"Bearer {token}"}
-    return
+    return {}
 
 
 def register_user(email, password):
@@ -29,7 +29,9 @@ def login_user(username, password):
 
 
 def predict(transaction: dict):
-    response = requests.post(f"{API_URL}/predict", json=transaction)
+    response = requests.post(
+        f"{API_URL}/predict", json=transaction, headers=get_auth_headers()
+    )
 
     response.raise_for_status()
 
