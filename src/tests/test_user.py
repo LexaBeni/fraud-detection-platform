@@ -46,6 +46,16 @@ def test_admin_login(login_admin):
     assert login_admin["token_type"] == "bearer"
 
 
+def test_login_with_invalid_credentials(client):
+    response = client.post(
+        "/auth/login",
+        data={"username": "A", "password": "A"},
+    )
+
+    assert response.status_code == 401
+    assert response.json()["error_code"] == "INVALID_CREDENTIALS"
+
+
 def test_admin_auth(auth_admin):
     assert "Authorization" in auth_admin
 
