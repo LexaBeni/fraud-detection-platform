@@ -39,7 +39,7 @@ if not st.session_state["access_token"]:
 else:
     with st.sidebar:
         st.success("Logged in")
-        page = st.radio("Prediction Page", ["Prediction", "History"])
+        page = st.radio("Page", ["Prediction", "History"])
         if st.button("Log out"):
             st.session_state["access_token"] = None
             st.session_state["refresh_token"] = None
