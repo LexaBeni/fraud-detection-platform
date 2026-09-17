@@ -119,13 +119,16 @@ else:
             id = st.number_input("Prediction ID", min_value=0, step=1)
             if st.form_submit_button("Get prediction"):
                 result = get_prediction(int(id))
+                st.dataframe(result)
 
         with st.form("History Form"):
             st.subheader("See all your predictions.")
             if st.form_submit_button("Get all predictions"):
                 result = get_history()
+                st.dataframe(result)
         with st.form("Delete Form"):
             st.subheader("Delete your prediction")
             id = st.number_input("Prediction id", min_value=0, step=1)
             if st.form_submit_button(f"Delete prediction with id {id}"):
                 result = delete_prediction(id)
+                st.dataframe(result)
