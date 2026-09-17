@@ -47,6 +47,19 @@ def login_user(username, password):
     return response.json()
 
 
+def request(method, endpoint, **kwargs):
+    response = requests.method(f"{API_URL}/endpoint", **kwargs)
+    if response.status_code == 401:
+        refresh_token = st.session_state.get("refresh_token")
+        if not refresh_token:
+            raise ValueError("No refresh token available.")
+        token(refresh_token)
+        response = requests.method(f"{API_URL}/endpoint", **kwargs)
+
+    response.raise_for_status()
+    return response.json()
+
+
 def predict(transaction: dict):
     response = requests.post(
         f"{API_URL}/predict", json=transaction, headers=get_auth_headers()
