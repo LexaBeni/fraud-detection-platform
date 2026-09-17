@@ -4,12 +4,21 @@ import streamlit as st
 API_URL = "http://localhost:8000"
 
 
+class AuthenticationError(Exception):
+    pass
+
+
 def token(refresh_token: str):
-    result = requests.post(
+    response = requests.post(
         f"{API_URL}/auth/refresh", json={"refresh_token": refresh_token}
     )
-    result.raise_for_status()
-    data = result.json()
+    if response.status_code == 401:
+        st.session_state["refresh_token"] = None
+        st.session_state["access_token_token"] = None
+        return AuthenticationError("Session expired.")
+
+    response.raise_for_status()
+    data = response.json()
     st.session_state["refresh_token"] = data["refresh_token"]
     st.session_state["access_token"] = data["access_token"]
 
