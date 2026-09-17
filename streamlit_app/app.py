@@ -14,6 +14,9 @@ st.set_page_config(page_title="Fraud Detection", layout="wide")
 if "access_token" not in st.session_state:
     st.session_state["access_token"] = None
 
+if "refresh_token" not in st.session_state:
+    st.session_state["refresh_token"] = None
+
 if not st.session_state["access_token"]:
     st.title("Fraud Detection System - Login")
     tab1, tab2 = st.tabs(["Login", "Register"])
