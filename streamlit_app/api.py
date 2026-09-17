@@ -38,7 +38,7 @@ def predict(transaction: dict):
     return response.json()
 
 
-def delete(id: int):
+def delete_prediction(id: int):
     response = requests.delete(
         f"{API_URL}/predict/delete/{id}", headers=get_auth_headers()
     )
