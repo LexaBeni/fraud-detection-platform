@@ -10,9 +10,8 @@ def token(refresh_token: str):
     )
     result.raise_for_status()
     data = result.json()
-    st.session_state["refresh_token"] = data.refresh_token
-    st.session_state["access_token"] = data.access_token
-    st.rerun()
+    st.session_state["refresh_token"] = data["refresh_token"]
+    st.session_state["access_token"] = data["access_token"]
 
 
 def get_auth_headers():
