@@ -14,8 +14,8 @@ def token(refresh_token: str):
     )
     if response.status_code == 401:
         st.session_state["refresh_token"] = None
-        st.session_state["access_token_token"] = None
-        return AuthenticationError("Session expired.")
+        st.session_state["access_token"] = None
+        raise AuthenticationError("Session expired.")
 
     response.raise_for_status()
     data = response.json()
@@ -48,70 +48,33 @@ def login_user(username, password):
 
 
 def request(method, endpoint, **kwargs):
-    response = requests.method(f"{API_URL}/endpoint", **kwargs)
+    response = requests.request(
+        method, f"{API_URL}{endpoint}", **kwargs, headers=get_auth_headers()
+    )
     if response.status_code == 401:
         refresh_token = st.session_state.get("refresh_token")
         if not refresh_token:
             raise ValueError("No refresh token available.")
         token(refresh_token)
-        response = requests.method(f"{API_URL}/endpoint", **kwargs)
+        response = requests.request(
+            method, f"{API_URL}{endpoint}", **kwargs, headers=get_auth_headers()
+        )
 
     response.raise_for_status()
     return response.json()
 
 
 def predict(transaction: dict):
-    response = requests.post(
-        f"{API_URL}/predict", json=transaction, headers=get_auth_headers()
-    )
-
-    if response.status_code == 401:
-        token(st.session_state["refresh_token"])
-        response = requests.post(
-            f"{API_URL}/predict", json=transaction, headers=get_auth_headers()
-        )
-    response.raise_for_status()
-    return response.json()
+    return request("POST", "/predict", json=transaction)
 
 
-def delete_prediction(id: int):
-    response = requests.delete(
-        f"{API_URL}/predict/delete/{id}", headers=get_auth_headers()
-    )
-
-    if response.status_code == 401:
-        token(st.session_state["refresh_token"])
-        response = requests.delete(
-            f"{API_URL}/predict/delete/{id}", headers=get_auth_headers()
-        )
-    response.raise_for_status()
-
-    return response.json()
+def delete_prediction(prediction_id: int):
+    return request("DELETE", f"/predict/delete/{prediction_id}")
 
 
-def get_prediction(id: int):
-    response = requests.get(
-        f"{API_URL}/predict/history/{id}", headers=get_auth_headers()
-    )
-
-    if response.status_code == 401:
-        token(st.session_state["refresh_token"])
-        response = requests.get(
-            f"{API_URL}/predict/history/{id}", headers=get_auth_headers()
-        )
-    response.raise_for_status()
-
-    return response.json()
+def get_prediction(prediction_id: int):
+    return request("GET", f"/predict/history/{prediction_id}")
 
 
 def get_history():
-    response = requests.get(f"{API_URL}/predict/history", headers=get_auth_headers())
-
-    if response.status_code == 401:
-        token(st.session_state["refresh_token"])
-        response = requests.get(
-            f"{API_URL}/predict/history", headers=get_auth_headers()
-        )
-    response.raise_for_status()
-
-    return response.json()
+    return request("GET", "/predict/history")
