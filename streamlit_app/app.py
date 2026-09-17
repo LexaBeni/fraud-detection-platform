@@ -26,6 +26,7 @@ if not st.session_state["access_token"]:
         if st.form_submit_button("Login"):
             data = login_user(username, password)
             st.session_state["access_token"] = data["access_token"]
+            st.session_state["refresh_token"] = data["refresh_token"]
             st.success("Successfully logged in!")
             st.rerun()
     with tab2, st.form("Register"):
@@ -41,6 +42,8 @@ else:
         page = st.radio("Prediction Page", ["Prediction", "History"])
         if st.button("Log out"):
             st.session_state["access_token"] = None
+            st.session_state["refresh_token"] = None
+            st.rerun()
 
     if page == "Prediction":
         st.title("Fraud Detection")
