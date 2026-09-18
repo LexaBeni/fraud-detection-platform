@@ -59,7 +59,8 @@ def request(method, endpoint, **kwargs):
         response = requests.request(
             method, f"{API_URL}{endpoint}", **kwargs, headers=get_auth_headers()
         )
-
+    if response.status_code == 404:
+        st.error("Prediction not found")
     response.raise_for_status()
     return response.json()
 
