@@ -8,7 +8,7 @@ class AuthenticationError(Exception):
     pass
 
 
-def token(refresh_token: str):
+def refresh_access_token(refresh_token: str):
     response = requests.post(
         f"{API_URL}/auth/refresh", json={"refresh_token": refresh_token}
     )
@@ -55,7 +55,7 @@ def request(method, endpoint, **kwargs):
         refresh_token = st.session_state.get("refresh_token")
         if not refresh_token:
             raise ValueError("No refresh token available.")
-        token(refresh_token)
+        refresh_access_token(refresh_token)
         response = requests.request(
             method, f"{API_URL}{endpoint}", **kwargs, headers=get_auth_headers()
         )
