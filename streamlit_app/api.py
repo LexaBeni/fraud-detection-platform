@@ -76,7 +76,7 @@ def get_prediction(prediction_id: int):
     return request("GET", f"/predict/history/{prediction_id}")
 
 
-def get_history(condition: str):
+def get_history(condition: str | None = None):
     params = {}
     if condition:
         params["condition"] = condition
