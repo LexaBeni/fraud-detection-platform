@@ -127,6 +127,11 @@ else:
             if st.form_submit_button("Get all predictions"):
                 selected_condition = None if condition == "ALL" else condition
                 result = get_history(selected_condition)
+                for prediction in result:
+                    prediction["probability"] = (
+                        f"{round(prediction['probability'] * 100, 2)}%"
+                    )
+                    prediction["threshold"] = f"{prediction['threshold'] * 100}%"
                 st.dataframe(result)
 
         with st.form("Delete Form"):
