@@ -126,9 +126,9 @@ else:
         st.write("Select or delete your prediction.")
         with st.form("Specific History Form"):
             st.subheader("Select your specific prediction.")
-            id = st.number_input("Prediction ID", min_value=0, step=1)
+            prediction_id = st.number_input("Prediction ID", min_value=0, step=1)
             if st.form_submit_button("Get prediction"):
-                result = get_prediction(int(id))
+                result = get_prediction(int(prediction_id))
                 if result["prediction"].lower() == "valid":
                     st.success("The transaction is VALID!")
                 else:
@@ -154,7 +154,7 @@ else:
 
         with st.form("Delete Form"):
             st.subheader("Delete your prediction")
-            id = st.number_input("Prediction id", min_value=0, step=1)
+            prediction_id = st.number_input("Prediction id", min_value=0, step=1)
             if st.form_submit_button("Delete prediction"):
-                result = delete_prediction(id)
+                result = delete_prediction(prediction_id)
                 st.write(result)
