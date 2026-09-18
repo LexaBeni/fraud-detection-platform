@@ -40,6 +40,26 @@ services:
       migrate:
         condition: service_completed_successfully
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health', timeout=3)"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+  
+  streamlit:
+    container_name: streamlit
+    build: 
+      context: .
+      dockerfile: Dockerfile.streamlit
+    image: streamlit-app
+    ports:
+      - "8501:8501"
+    env_file:
+      - .env
+    depends_on:
+      fastapi:
+        condition: service_healthy
   
 volumes:
   mysql_data:
