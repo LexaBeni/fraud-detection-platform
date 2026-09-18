@@ -131,13 +131,11 @@ else:
                     st.success("The transaction is VALID!")
                 else:
                     st.error("The transaction is FRAUD!")
-                    st.metric(
-                        "Fraud probability", f"{100 * result['probability']:.2f}%"
-                    )
-                    st.metric(
-                        "Classification threshold", f"{result['threshold'] * 100:.0f}%"
-                    )
-                    st.caption(f"Prediction id: {result['id']}")
+                st.metric("Fraud probability", f"{100 * result['probability']:.2f}%")
+                st.metric(
+                    "Classification threshold", f"{result['threshold'] * 100:.0f}%"
+                )
+                st.caption(f"Prediction id: {result['id']}")
 
     if page == "History":
         st.title("Prediction History")
