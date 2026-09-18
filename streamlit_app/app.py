@@ -109,7 +109,17 @@ else:
 
                 result = predict(transaction)
 
-                st.json(result)
+                if result["prediction"].lower() == "valid":
+                    st.success("The transaction is VALID!")
+                else:
+                    st.error("The transaction is FRAUD!")
+                    st.metric(
+                        "Fraud probability", f"{100 * result['probability']:.2f}%"
+                    )
+                    st.metric(
+                        "Classification threshold", f"{result['threshold'] * 100:.0f}%"
+                    )
+                    st.caption(f"Prediction id: {result['id']}")
 
     if page == "History":
         st.title("Prediction History")
@@ -123,9 +133,11 @@ else:
                     st.success("The transaction is VALID!")
                 else:
                     st.error("The transaction is FRAUD!")
-                st.warning(f"Predicted probability: {100 * result['probability']}%")
-                st.info(f"Threshold used: {result['threshold'] * 100}%")
-                st.info(f"Prediction id: {result['id']}")
+                st.metric("Fraud probability", f"{100 * result['probability']:.2f}%")
+                st.metric(
+                    "Classification threshold", f"{result['threshold'] * 100:.0f}%"
+                )
+                st.caption(f"Prediction id: {result['id']}")
 
         with st.form("History Form"):
             st.subheader("See all your predictions.")
