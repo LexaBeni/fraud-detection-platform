@@ -123,9 +123,12 @@ else:
 
         with st.form("History Form"):
             st.subheader("See all your predictions.")
+            condition = st.selectbox("Condition", ["ALL", "FRAUD", "VALID"])
             if st.form_submit_button("Get all predictions"):
-                result = get_history()
+                selected_condition = None if condition == "ALL" else condition
+                result = get_history(selected_condition)
                 st.dataframe(result)
+
         with st.form("Delete Form"):
             st.subheader("Delete your prediction")
             id = st.number_input("Prediction id", min_value=0, step=1)
