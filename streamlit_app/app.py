@@ -119,7 +119,13 @@ else:
             id = st.number_input("Prediction ID", min_value=0, step=1)
             if st.form_submit_button("Get prediction"):
                 result = get_prediction(int(id))
-                st.dataframe(result)
+                if result["prediction"].lower() == "valid":
+                    st.success("The transaction is VALID!")
+                else:
+                    st.error("The transaction is FRAUD!")
+                st.warning(f"Predicted probability: {100 * result['probability']}%")
+                st.info(f"Threshold used: {result['threshold'] * 100}%")
+                st.info(f"Prediction id: {result['id']}")
 
         with st.form("History Form"):
             st.subheader("See all your predictions.")
@@ -137,6 +143,6 @@ else:
         with st.form("Delete Form"):
             st.subheader("Delete your prediction")
             id = st.number_input("Prediction id", min_value=0, step=1)
-            if st.form_submit_button(f"Delete prediction with id {id}"):
+            if st.form_submit_button("Delete prediction"):
                 result = delete_prediction(id)
-                st.dataframe(result)
+                st.write(result)
