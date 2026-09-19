@@ -17,6 +17,8 @@ jobs:
         permissions:
             id-token: write
             contents: read
+        outputs:
+          image: ${{ steps.login-ecr.outputs.registry }}/fraud-detection-streamlit:${{ github.sha }}
         steps:
             - name: Checkout repository
               uses: actions/checkout@v4
@@ -39,6 +41,37 @@ jobs:
                 push: true
                 tags: |
                   ${{ steps.login-ecr.outputs.registry }}/fraud-detection-streamlit:latest
-                  ${{ steps.login-ecr.outputs.registry}}/fraud-detection-streamlit:${{ github.sha }}
+                  ${{ steps.login-ecr.outputs.registry }}/fraud-detection-streamlit:${{ github.sha }}
                 cache-from: type=gha
                 cache-to: type=gha,mode=max
+    ecs:
+        needs: build-and-push
+        name: Push to ECS
+        environment: aws
+        runs-on: ubuntu-latest
+        permissions:
+            id-token: write
+            contents: read
+        steps:
+            - name: Checkout Repository
+              uses: actions/checkout@v4
+            - name: Configure AWS creadentials
+              uses: aws-actions/configure-aws-credentials@v6
+              with:
+                role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+                aws-region: ${{ vars.AWS_REGION }}
+                audience: sts.amazonaws.com
+            - name: Render Task
+              id: task-def
+              uses: aws-actions/amazon-ecs-render-task-definition@v1
+              with:
+                task-definition: fraud-streamlit.json
+                container-name: streamlit
+                image: ${{ needs.build-and-push.outputs.image }}
+            - name: Deploy Amazon ECS task definition
+              uses: aws-actions/amazon-ecs-deploy-task-definition@v2
+              with:
+                task-definition: ${{ steps.task-def.outputs.task-definition}}
+                service: fraud-streamlit-service-72do6j1b
+                cluster: fraud-detection-cluster
+                wait-for-service-stability: true
