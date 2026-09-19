@@ -1,0 +1,43 @@
+name: Streamlit CD
+
+on:
+    push:
+        branches: ["main"]
+        paths:
+        - "streamlit_app/**"
+        - "Dockerfile.streamlit"
+        - "docker_requirements_streamlit.txt"
+        - "fraud-streamlit.json"
+        - ".github/workflows/cd-streamlit.yml"
+jobs:
+    build-and-push:
+        name: Build and push
+        environment: aws
+        runs-on: ubuntu-latest
+        permissions:
+            id-token: write
+            contents: read
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+            - name: Configure AWS creadentials
+              uses: aws-actions/configure-aws-credentials@v6
+              with:
+                role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+                aws-region: ${{ vars.AWS_REGION }}
+                audience: sts.amazonaws.com
+            - name: Log in ECR
+              id: login-ecr
+              uses: aws-actions/amazon-ecr-login@v2
+            - name: Set up Docker Buildx
+              uses: docker/setup-buildx-action@v2
+            - name: Build and push image
+              uses: docker/build-push-action@v6
+              with:
+                context: .
+                push: true
+                tags: |
+                  ${{ steps.login-ecr.outputs.registry }}/fraud-detection-streamlit:latest
+                  ${{ steps.login-ecr.outputs.registry}}/fraud-detection-streamlit:${{ github.sha }}
+                cache-from: type=gha
+                cache-to: type=gha,mode=max

@@ -1,0 +1,103 @@
+{
+    "taskDefinitionArn": "arn:aws:ecs:eu-central-1:773658094755:task-definition/fraud-streamlit:3",
+    "containerDefinitions": [
+        {
+            "name": "streamlit",
+            "image": "773658094755.dkr.ecr.eu-central-1.amazonaws.com/fraud-detection-streamlit@sha256:e1f9fb41ecfa796a385ad26f5dc181ab6ac0a8edf1b1cfef300fee6c61a6b50a",
+            "cpu": 0,
+            "portMappings": [
+                {
+                    "containerPort": 8501,
+                    "hostPort": 8501,
+                    "protocol": "tcp",
+                    "name": "main-8501-tcp",
+                    "appProtocol": "http"
+                }
+            ],
+            "essential": true,
+            "environment": [],
+            "environmentFiles": [],
+            "mountPoints": [],
+            "volumesFrom": [],
+            "secrets": [
+                {
+                    "name": "API_URL",
+                    "valueFrom": "arn:aws:ssm:eu-central-1:773658094755:parameter/fraud-api/API_URL"
+                }
+            ],
+            "ulimits": [],
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-group": "/ecs/fraud-streamlit",
+                    "awslogs-create-group": "true",
+                    "awslogs-region": "eu-central-1",
+                    "awslogs-stream-prefix": "ecs"
+                },
+                "secretOptions": []
+            },
+            "systemControls": []
+        }
+    ],
+    "family": "fraud-streamlit",
+    "taskRoleArn": "arn:aws:iam::773658094755:role/ecsTaskExecutionRole-fraud-api",
+    "executionRoleArn": "arn:aws:iam::773658094755:role/ecsTaskExecutionRole-fraud-api",
+    "networkMode": "awsvpc",
+    "revision": 3,
+    "volumes": [],
+    "status": "ACTIVE",
+    "requiresAttributes": [
+        {
+            "name": "com.amazonaws.ecs.capability.logging-driver.awslogs"
+        },
+        {
+            "name": "ecs.capability.execution-role-awslogs"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.ecr-auth"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.19"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.21"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.task-iam-role"
+        },
+        {
+            "name": "ecs.capability.execution-role-ecr-pull"
+        },
+        {
+            "name": "ecs.capability.secrets.ssm.environment-variables"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.18"
+        },
+        {
+            "name": "ecs.capability.task-eni"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.29"
+        }
+    ],
+    "placementConstraints": [],
+    "compatibilities": [
+        "EC2",
+        "FARGATE",
+        "MANAGED_INSTANCES"
+    ],
+    "runtimePlatform": {
+        "cpuArchitecture": "X86_64",
+        "operatingSystemFamily": "LINUX"
+    },
+    "requiresCompatibilities": [
+        "FARGATE"
+    ],
+    "cpu": "256",
+    "memory": "512",
+    "registeredAt": "2026-09-19T13:08:35.297Z",
+    "registeredBy": "arn:aws:iam::773658094755:root",
+    "enableFaultInjection": false,
+    "tags": []
+}
