@@ -3,6 +3,15 @@ name: CD
 on:
     push:
         branches: ["main"]
+        paths:
+          - "src/**"
+          - "models/**"
+          - "alembic/**"
+          - "Dockerfile"
+          - "docker_requirements.txt"
+          - "fraud-api.json"
+          - "scripts/**"
+          - ".github/workflows/cd.yml"
 jobs:
     build-and-push:
         name: Build and Push Image
