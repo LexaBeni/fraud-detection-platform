@@ -1,6 +1,6 @@
 import streamlit as st
 
-from streamlit_app.api import (
+from api import (
     delete_prediction,
     get_history,
     get_prediction,
