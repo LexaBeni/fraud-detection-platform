@@ -46,7 +46,7 @@ jobs:
                 cache-to: type=gha,mode=max
     ecs:
         needs: build-and-push
-        name: Push to ECS
+        name: Deploy to ECS
         environment: aws
         runs-on: ubuntu-latest
         permissions:
