@@ -16,6 +16,47 @@ resource "aws_ecs_cluster" "main" {
    }
 }
 
+resource "aws_ecs_task_definition" "streamlit" {
+  family = "fraud-streamlit"
+  network_mode = "awsvpc"
+  requires_compatibilities = ["FARGATE"]
+  cpu = "256"
+  memory = "512"
+  runtime_platform {
+    cpu_architecture = "X86_64"
+    operating_system_family = "LINUX"
+  }
+  execution_role_arn = "arn:aws:iam::773658094755:role/ecsTaskExecutionRole-fraud-api"
+  task_role_arn = "arn:aws:iam::773658094755:role/ecsTaskExecutionRole-fraud-api"
+  container_definitions = jsonencode([
+    {name = "streamlit"
+    image = var.streamlit_image
+    cpu = 0
+    essential = true
+    portMappings=[{
+      containerPort = 8501
+      hostPort  = 8501
+      "protocol" = "tcp"
+      "name" = "main-8501-tcp"
+      "appProtocol" = "http"
+    }]
+    secrets = [
+  {
+    name = "API_URL",
+    valueFrom = "arn:aws:ssm:eu-central-1:773658094755:parameter/fraud-api/API_URL"
+  }
+]
+  logConfiguration = {
+        logDriver = "awslogs",
+        options = {
+          awslogs-group = "/ecs/fraud-streamlit",
+          awslogs-create-group = "true",
+          awslogs-region = "eu-central-1",
+          awslogs-stream-prefix = "ecs"
+        }}
+}])
+}
+
 resource "aws_ecs_task_definition" "fastapi" {
   family = "fraud-api"
   network_mode = "awsvpc"
