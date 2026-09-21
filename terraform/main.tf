@@ -230,3 +230,38 @@ resource "aws_ecs_service" "fastapi" {
     assign_public_ip = true
   }
 }
+
+resource "aws_ecs_service" "streamlit" {
+  name                    = "fraud-streamlit-service-72do6j1b"
+  cluster                 = aws_ecs_cluster.main.id
+  task_definition         = aws_ecs_task_definition.streamlit.arn
+  desired_count           = 1
+  enable_ecs_managed_tags = true
+  enable_execute_command  = true
+  deployment_circuit_breaker {
+    enable   = true
+    rollback = true
+  }
+  lifecycle {
+    ignore_changes = [
+      task_definition
+    ]
+  }
+  capacity_provider_strategy {
+    capacity_provider = "FARGATE"
+    weight            = 1
+    base              = 0
+  }
+
+  load_balancer {
+    target_group_arn = aws_alb_target_group.streamlit.arn
+    container_name   = "streamlit"
+    container_port   = 8501
+  }
+
+  network_configuration {
+    subnets          = data.aws_subnets.main.ids
+    security_groups  = [aws_security_group.streamlit.id]
+    assign_public_ip = true
+  }
+}
