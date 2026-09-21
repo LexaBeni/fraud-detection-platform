@@ -131,54 +131,54 @@ resource "aws_ecs_task_definition" "fastapi" {
 }
 
 resource "aws_alb_target_group" "fastapi" {
-  name = "fraud-api-tg"
-  port = 8000
-  protocol = "HTTP"
+  name        = "fraud-api-tg"
+  port        = 8000
+  protocol    = "HTTP"
   target_type = "ip"
-  vpc_id = data.aws_vpc.main.id
+  vpc_id      = data.aws_vpc.main.id
 }
 
 resource "aws_alb_target_group" "streamlit" {
-  name = "fraud-streamlit-tg"
-  port = 8501
-  protocol = "HTTP"
+  name        = "fraud-streamlit-tg"
+  port        = 8501
+  protocol    = "HTTP"
   target_type = "ip"
-  vpc_id = data.aws_vpc.main.id
+  vpc_id      = data.aws_vpc.main.id
 }
 
 resource "aws_lb" "main" {
-  name = "fraud-detection-alb"
-  internal = false
+  name               = "fraud-detection-alb"
+  internal           = false
   load_balancer_type = "application"
-  security_groups = [aws_security_group.alb.id]
-  subnets = data.aws_subnets.main.ids
+  security_groups    = [aws_security_group.alb.id]
+  subnets            = data.aws_subnets.main.ids
 }
 
 resource "aws_lb_listener" "fastapi" {
   load_balancer_arn = aws_lb.main.arn
-  port = "80"
-  protocol = "HTTP"
+  port              = "80"
+  protocol          = "HTTP"
   default_action {
-    type = "forward"
+    type             = "forward"
     target_group_arn = aws_alb_target_group.fastapi.arn
     forward {
-      target_group{
+      target_group {
         arn = aws_alb_target_group.fastapi.arn
-    }
-    stickiness {
-      duration = 3600
-      enabled = false
-    }
+      }
+      stickiness {
+        duration = 3600
+        enabled  = false
+      }
     }
   }
 }
 
 resource "aws_lb_listener" "streamlit" {
   load_balancer_arn = aws_lb.main.arn
-  protocol = "HTTP"
-  port = "8501"
+  protocol          = "HTTP"
+  port              = "8501"
   default_action {
-    type = "forward"
+    type             = "forward"
     target_group_arn = aws_alb_target_group.streamlit.arn
     forward {
       target_group {
@@ -186,7 +186,7 @@ resource "aws_lb_listener" "streamlit" {
       }
       stickiness {
         duration = 3600
-        enabled = false
+        enabled  = false
       }
     }
   }
@@ -197,14 +197,14 @@ data "aws_iam_role" "task_execution" {
 }
 
 resource "aws_ecs_service" "fastapi" {
-  name = "fraud-api-service-w30jxco7"
-  cluster = aws_ecs_cluster.main.id
-  task_definition = aws_ecs_task_definition.fastapi.arn
-  desired_count = 1
+  name                    = "fraud-api-service-w30jxco7"
+  cluster                 = aws_ecs_cluster.main.id
+  task_definition         = aws_ecs_task_definition.fastapi.arn
+  desired_count           = 1
   enable_ecs_managed_tags = true
   enable_execute_command  = true
   deployment_circuit_breaker {
-    enable = true
+    enable   = true
     rollback = true
   }
   lifecycle {
@@ -216,17 +216,17 @@ resource "aws_ecs_service" "fastapi" {
     capacity_provider = "FARGATE"
     weight            = 1
     base              = 0
-}
+  }
 
   load_balancer {
     target_group_arn = aws_alb_target_group.fastapi.arn
-    container_name = "fraud-api"
-    container_port = 8000
+    container_name   = "fraud-api"
+    container_port   = 8000
   }
 
   network_configuration {
-    subnets = data.aws_subnets.main.ids
-    security_groups = [aws_security_group.fastapi.id]
+    subnets          = data.aws_subnets.main.ids
+    security_groups  = [aws_security_group.fastapi.id]
     assign_public_ip = true
   }
 }
