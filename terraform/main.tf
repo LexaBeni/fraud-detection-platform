@@ -145,3 +145,30 @@ resource "aws_alb_target_group" "streamlit" {
   target_type = "ip"
   vpc_id = data.aws_vpc.main.id
 }
+
+resource "aws_lb" "main" {
+  name = "fraud-detection-alb"
+  internal = false
+  load_balancer_type = "application"
+  security_groups = [aws_security_group.alb.id]
+  subnets = data.aws_subnets.main.ids
+}
+
+resource "aws_lb_listener" "fastapi" {
+  load_balancer_arn = aws_lb.main.arn
+  port = "80"
+  protocol = "HTTP"
+  default_action {
+    type = "forward"
+    target_group_arn = aws_alb_target_group.fastapi.arn
+    forward {
+      target_group{
+        arn = aws_alb_target_group.fastapi.arn
+    }
+    stickiness {
+      duration = 3600
+      enabled = false
+    }
+    }
+  }
+}
