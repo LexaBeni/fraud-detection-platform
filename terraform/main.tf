@@ -129,3 +129,11 @@ resource "aws_ecs_task_definition" "fastapi" {
       } }
   }])
 }
+
+resource "aws_alb_target_group" "fastapi" {
+  name = "fraud-api-tg"
+  port = 8000
+  protocol = "HTTP"
+  target_type = "ip"
+  vpc_id = data.aws_vpc.main.id
+}
