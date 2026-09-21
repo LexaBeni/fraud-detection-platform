@@ -172,3 +172,22 @@ resource "aws_lb_listener" "fastapi" {
     }
   }
 }
+
+resource "aws_lb_listener" "streamlit" {
+  load_balancer_arn = aws_lb.main.arn
+  protocol = "HTTP"
+  port = "8501"
+  default_action {
+    type = "forward"
+    target_group_arn = aws_alb_target_group.streamlit.arn
+    forward {
+      target_group {
+        arn = aws_alb_target_group.streamlit.arn
+      }
+      stickiness {
+        duration = 3600
+        enabled = false
+      }
+    }
+  }
+}
