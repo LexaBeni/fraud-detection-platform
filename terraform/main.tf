@@ -137,3 +137,11 @@ resource "aws_alb_target_group" "fastapi" {
   target_type = "ip"
   vpc_id = data.aws_vpc.main.id
 }
+
+resource "aws_alb_target_group" "streamlit" {
+  name = "fraud-streamlit-tg"
+  port = 8501
+  protocol = "HTTP"
+  target_type = "ip"
+  vpc_id = data.aws_vpc.main.id
+}
