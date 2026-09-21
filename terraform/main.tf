@@ -191,3 +191,42 @@ resource "aws_lb_listener" "streamlit" {
     }
   }
 }
+
+data "aws_iam_role" "task_execution" {
+  name = "ecsTaskExecutionRole-fraud-api"
+}
+
+resource "aws_ecs_service" "fastapi" {
+  name = "fraud-api-service-w30jxco7"
+  cluster = aws_ecs_cluster.main.id
+  task_definition = aws_ecs_task_definition.fastapi.arn
+  desired_count = 1
+  enable_ecs_managed_tags = true
+  enable_execute_command  = true
+  deployment_circuit_breaker {
+    enable = true
+    rollback = true
+  }
+  lifecycle {
+    ignore_changes = [
+      task_definition
+    ]
+  }
+  capacity_provider_strategy {
+    capacity_provider = "FARGATE"
+    weight            = 1
+    base              = 0
+}
+
+  load_balancer {
+    target_group_arn = aws_alb_target_group.fastapi.arn
+    container_name = "fraud-api"
+    container_port = 8000
+  }
+
+  network_configuration {
+    subnets = data.aws_subnets.main.ids
+    security_groups = [aws_security_group.fastapi.id]
+    assign_public_ip = true
+  }
+}
