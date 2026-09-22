@@ -232,3 +232,13 @@ data/
 *mlartifacts/
 
 Untitled.ipynb
+
+#terraform
+
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+*.tfvars.json
+crash.log
+crash.*.log
