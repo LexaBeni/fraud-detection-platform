@@ -198,9 +198,6 @@ resource "aws_lb_listener" "streamlit" {
   }
 }
 
-data "aws_iam_role" "task_execution" {
-  name = "ecsTaskExecutionRole-fraud-api"
-}
 
 resource "aws_ecs_service" "fastapi" {
   name                    = "fraud-api-service-w30jxco7"
