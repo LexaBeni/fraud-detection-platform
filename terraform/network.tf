@@ -55,7 +55,7 @@ resource "aws_vpc_security_group_egress_rule" "streamlit" {
   ip_protocol       = "-1"
 }
 
-resource "aws_security_group" "rds" {
+/* resource "aws_security_group" "rds" {
   name        = "fraud-api-rds-sg"
   description = "security group for fraud-detection RDS"
   vpc_id      = data.aws_vpc.main.id
@@ -73,4 +73,4 @@ resource "aws_vpc_security_group_egress_rule" "rds" {
   security_group_id = aws_security_group.rds.id
   cidr_ipv4         = "0.0.0.0/0"
   ip_protocol       = "-1"
-}
+} */
