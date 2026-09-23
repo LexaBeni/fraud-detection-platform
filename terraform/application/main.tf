@@ -142,7 +142,7 @@ resource "aws_lb" "main" {
   name               = "fraud-detection-alb"
   internal           = false
   load_balancer_type = "application"
-  security_groups    = [aws_security_group.alb.id]
+  security_groups    = [data.aws_security_group.alb.id]
   subnets            = data.aws_subnets.main.ids
 }
 
@@ -215,7 +215,7 @@ resource "aws_ecs_service" "fastapi" {
 
   network_configuration {
     subnets          = data.aws_subnets.main.ids
-    security_groups  = [aws_security_group.fastapi.id]
+    security_groups  = [data.aws_security_group.fastapi.id]
     assign_public_ip = true
   }
 }
