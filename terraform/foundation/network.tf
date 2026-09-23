@@ -9,6 +9,12 @@ data "aws_subnets" "main" {
   }
 }
 
+resource "aws_security_group" "alb" {
+  name        = "fraud-api-alb-sg"
+  description = "security group for fraud-detection alb"
+  vpc_id      = data.aws_vpc.main.id
+}
+
 resource "aws_security_group" "fastapi" {
   name        = "fraud-api-ecs-sg"
   description = "security group for fraud-detection ecs"
@@ -17,7 +23,7 @@ resource "aws_security_group" "fastapi" {
 
 resource "aws_vpc_security_group_ingress_rule" "fastapi" {
   security_group_id            = aws_security_group.fastapi.id
-  referenced_security_group_id = "sg-066f821d15bebc3e8"
+  referenced_security_group_id = aws_security_group.alb.id
   from_port                    = 8000
   to_port                      = 8000
   ip_protocol                  = "tcp"
