@@ -14,7 +14,7 @@ data "aws_security_group" "fastapi" {
 }
 
 data "aws_security_group" "alb" {
-  name = "sg-08e444fef6fe92788"
+  id = "sg-08e444fef6fe92788"
 }
 
 resource "aws_security_group" "streamlit" {
