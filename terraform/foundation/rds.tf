@@ -9,7 +9,7 @@ resource "aws_vpc_security_group_ingress_rule" "rds" {
   to_port                      = 3306
   from_port                    = 3306
   ip_protocol                  = "tcp"
-  referenced_security_group_id = "sg-08ba2c3695a8a909f"
+  referenced_security_group_id = aws_security_group.fastapi.id
 }
 
 resource "aws_vpc_security_group_egress_rule" "rds" {
