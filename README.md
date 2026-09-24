@@ -172,6 +172,7 @@ This starts
 * FastAPI backend
 * Streamlit frontend
 The application consists of:
+
 | **Service** | **Local address** |
 | :--- | :--- |
 | **FastAPI API** | http://localhost:8000 |
@@ -216,3 +217,23 @@ Run Ruff:
 ruff check .
 ```
 The current test architecture covers authentication, authorization, prediction endpoints, API behavior, and application services.
+
+# **Project Structure**
+
+```text
+fraud-detection/
+├── .github/workflows/          # GitHub Actions CI/CD
+├── alembic/                    # Database migrations configuration and history
+├── models/                     # Saved LightGBM model
+├── notebooks/                  # Jupyter notebooks for data analysis & ML training
+├── scripts/                    # Helper scripts
+├── src/                        # FastAPI core backend application source code
+├── streamlit_app/              # Streamlit web dashboard source code
+├── terraform/                  # Infrastructure as Code (Foundation & Application layers)
+├── Dockerfile                  # Production container recipe for FastAPI backend
+├── Dockerfile.streamlit        # Production container recipe for Streamlit dashboard
+├── alembic.ini                 # Configuration file for Alembic migrations
+├── docker-compose.yml          # Local multi-container orchestration config
+├── pyproject.toml              # Project configuration (Ruff, pytest, linting)
+└── requirements.txt            # Main Python dependencies
+```
