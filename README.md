@@ -4,13 +4,13 @@ The project combines a machine learning pipeline with a production-oriented back
 
 ## **Features**
 * **Machine Learning:** Fraud detection using a LightGBM classification model with custom feature engineering for transaction and identity data, plus validation-based decision threshold optimization.
-* **M LOps:** MLflow experiments and model tracking.
+* **MLOps:** MLflow experiments and model tracking.
 * **Backend:** REST API built with FastAPI, JWT-based authentication/authorization, and MySQL database for users and prediction history.
 * **Frontend:** Interactive Streamlit frontend.
 * **DevOps & CI/CD:** Dockerized applications, automated testing with `pytest`, code quality checks with `Ruff`, and CI/CD via GitHub Actions.
 * **Cloud Infrastructure:** AWS deployment using ECS Fargate, AWS RDS for MySQL, Amazon ECR, Application Load Balancer, and infrastructure managed via separate Terraform foundation and application stacks.
 
-# **Technology Stack**
+## **Technology Stack**
 | Area | Technologies |
 | :--- | :--- |
 | **Machine Learning** | Python, Pandas, NumPy, LightGBM, scikit-learn |
@@ -26,7 +26,7 @@ The project combines a machine learning pipeline with a production-oriented back
 | **Cloud** | AWS ECS Fargate, ECR, RDS, ALB, SSM |
 | **Infrastructure as Code** | Terraform |
 
-# **Architecture**
+## **Architecture**
 The platform consists of a machine learning model, backend API, database, frontend, and AWS infrastructure managed by Terraform.
 
 ```mermaid
@@ -52,7 +52,7 @@ graph TD
     class LightXGB,RDS data;
 ```
 
-# **Terraform Architecture**:
+### **Terraform Architecture**:
 
 ```mermaid
 graph LR
@@ -86,27 +86,27 @@ Contains long-lived and inexpensive resources that are expected to survive appli
 * Amazon ECR repositories
 * RDS-related resources
 * Shared security groups and networking dependencies
-## 2. Application
-### Contains main resources that can be safely destroyed when the application is not needed
+### 2. Application
+Contains the main resources that can be safely destroyed when the application is not needed:
 * ECS cluster and services
 * ECS task definitions
 * Application Load Balancer
 * Target groups
 * ALB listeners
 * Application security groups
-This separation allows the application infrastructure to be stopped with:
+This separation allows the application infrastructure to be safely destroyed when it is not needed:
 ```bash
 cd terraform/application
 terraform destroy
 ```
-While persistent resources such as the database and container repositories remain securely available. The application can later be recreated by running:
+Persistent resources such as the database and container repositories remain available. The application infrastructure can later be recreated with:
 ```bash
 cd terraform/application
 terraform apply
 ```
-# **Machine Learning**
+## **Machine Learning**
 The fraud detection model is trained on the **IEEE-CIS Fraud Detection** dataset, combining transaction-level and identity information.
-# **ML Pipeline**
+### **ML Pipeline**
 The machine learning workflow consists of:
 1. Data loading and merging of transaction and identity datasets
 2. Exploratory data analysis
@@ -114,23 +114,21 @@ The machine learning workflow consists of:
 4. Custom feature engineering
 5. Temporal train/validation/test splitting
 6. Feature selection
-7. Creating custom ColumnTransformer
-8. Models training (LightGBM, XGBoost, and CatBoost)
-9. Champion model selection (LightGBM)
-10. Hyperparameter tuning
-11. Validation-based decision threshold optimization
-12. Final model training on the combined training and validation data
-13. Evaluation on a separate temporal test set
-14. Model logging and tracking with MLflow
+7. Model training
+8. Hyperparameter tuning
+9. Validation-based decision threshold optimization
+10. Final model training on the combined training and validation data
+11. Evaluation on a separate temporal test set
+12. Model logging and tracking with MLflow
 A temporal split is used instead of a random split to better reflect a real fraud detection scenario, where a model is trained on historical transactions and evaluated on future transactions.
 
-# **Model**
+### **Model**
 The final classifier is based on LightGBM, a gradient boosting framework well suited for tabular data.
 
 Because fraud detection is an imbalanced classification problem, model evaluation focuses on metrics beyond accuracy, particularly PR-AUC, ROC-AUC, precision, recall, and F1-score.
 
 The prediction threshold is optimized on the validation set instead of relying exclusively on the default 0.5 threshold. This allows the system to balance precision and recall according to the requirements of fraud detection.
-# Validation Performance
+### Validation Performance
 | **Metric** | **Validation** |
 | :--- | :---|
 | **PR-AUC** | ~0.412 |
@@ -140,9 +138,9 @@ The prediction threshold is optimized on the validation set instead of relying e
 | **F1-score** | ~0.438 |
 
 The optimized classification threshold was 0.18.
-## Test Performance
+### Test Performance
 The final model was retrained using the training and validation data and evaluated on the held-out temporal test set.
-| **Metric**  | **Validation** |
+| **Metric**  | **Test** |
 | :---| :--- |
 | **PR-AUC** | ~0.345 |
 | **ROC-AUC** | ~0.866 |
@@ -189,7 +187,7 @@ To remove the database volume as well:
 ```bash
 docker compose down -v
 ```
-# **Database Migrations**
+## **Database Migrations**
 
 Database schema changes are managed using Alembic.
 
@@ -203,7 +201,7 @@ The trained LightGBM model is stored as a serialized model artifact and loaded b
 
 The API does not require an MLflow server to perform inference. MLflow is used for experiment tracking and model development rather than as a runtime dependency of the prediction API.
 
-# **Testing & Code Quality**
+## **Testing & Code Quality**
 
 The project uses `pytest` for automated testing and `Ruff` for linting and code quality checks.
 
@@ -218,7 +216,7 @@ ruff check .
 ```
 The current test architecture covers authentication, authorization, prediction endpoints, API behavior, and application services.
 
-# **Project Structure**
+## **Project Structure**
 
 ```text
 fraud-detection/
