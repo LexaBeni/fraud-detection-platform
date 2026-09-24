@@ -176,8 +176,9 @@ The application consists of:
 | :--- | :--- |
 | **FastAPI API** | http://localhost:8000 |
 | **FastAPI Docs** | http://localhost:8000/docs |
-| **Streamlit** | | http://localhost:8501 |
-| **MySQL** | | localhost:3306 |
+| **Streamlit** | http://localhost:8501 |
+| **MySQL** | localhost:3306 (or 127.0.0.1:3306) |
+
 The database schema is initialized through **Alembic migrations**.
 To stop the application:
 ```bash
@@ -187,3 +188,31 @@ To remove the database volume as well:
 ```bash
 docker compose down -v
 ```
+# **Database Migrations**
+
+Database schema changes are managed using Alembic.
+
+Apply the latest migrations with:
+
+```bash
+alembic upgrade head
+```
+## Model Artifact
+The trained LightGBM model is stored as a serialized model artifact and loaded by the FastAPI application during startup.
+
+The API does not require an MLflow server to perform inference. MLflow is used for experiment tracking and model development rather than as a runtime dependency of the prediction API.
+
+# **Testing & Code Quality**
+
+The project uses `pytest` for automated testing and `Ruff` for linting and code quality checks.
+
+Run the test suite:
+
+```bash
+pytest
+```
+Run Ruff:
+```
+ruff check .
+```
+The current test architecture covers authentication, authorization, prediction endpoints, API behavior, and application services.
