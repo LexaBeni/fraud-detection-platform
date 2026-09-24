@@ -28,54 +28,58 @@ The project combines a machine learning pipeline with a production-oriented back
 
 # **Architecture**
 The platform consists of a machine learning model, backend API, database, frontend, and AWS infrastructure managed by Terraform.
+
 ```mermaid
 graph TD
-    %% Define Styles
-    classDef infra fill:#f9f,stroke:#333,stroke-width:2px;
-    classDef app fill:#bbf,stroke:#333,stroke-width:2px;
-    classDef data fill:#fbf,stroke:#333,stroke-width:2px;
+    %% Custom styling for contrast and text visibility
+    classDef client fill:#E5E7EB,stroke:#374151,stroke-width:2px,color:#111827;
+    classDef app fill:#DBEAFE,stroke:#2563EB,stroke-width:2px,color:#1E3A8A;
+    classDef data fill:#FCE7F3,stroke:#DB2777,stroke-width:2px,color:#831843;
 
-    %% Main Client Entry
     User([User / Client]) --> |HTTPS| ALB[AWS ALB]
 
-    %% Application Layer (ECS Fargate)
     subgraph ECS [AWS ECS Fargate Layer]
         ALB --> Streamlit[Streamlit Dashboard]
         Streamlit -->|API Requests| FastAPI[FastAPI Backend]
-        
-        %% Model Split
         FastAPI -->|Runs Inference| LightXGB[LightGBM Model]
     end
 
-    %% Data Layer
     FastAPI -->|Read/Write & Migrations| RDS[(AWS RDS MySQL)]
 
-    %% Terraform Split & Architecture
-    subgraph IaC [Terraform Infrastructure Components]
-        TF[Terraform Configuration] -->|Deploys & Provisions| Split{Architecture Split}
-        
-        subgraph Found [1. Foundation Layer]
-            Split --> ECR[AWS ECR]
-            Split --> SharedRDS[Shared RDS Instance]
-            Split --> SecGroup[Shared Security Groups]
-            Split --> Res[Shared Resources]
-        end
-        
-        subgraph AppLayer [2. Application Layer]
-            Split --> AppECS[ECS Services / Tasks]
-            Split --> AppALB[ALB Config]
-            Split --> TG[Target Groups]
-            Split --> List[Listeners]
-            Split --> AppSG[App Security Groups]
-        end
-    end
-
-    %% Apply Classes for visual grouping
-    class ECR,SharedRDS,SecGroup,Res infra;
-    class Streamlit,FastAPI,AppECS,AppALB,TG,List,AppSG app;
+    %% Apply visibility styles
+    class User client;
+    class ALB,Streamlit,FastAPI app;
     class LightXGB,RDS data;
 ```
-# **Terraform Architecture**
+
+# **Terraform Architecture**:
+
+```mermaid
+graph LR
+    %% Custom styling for contrast
+    classDef base fill:#F3F4F6,stroke:#4B5563,stroke-width:2px,color:#1F2937;
+    classDef layer1 fill:#FEF3C7,stroke:#D97706,stroke-width:2px,color:#78350F;
+    classDef layer2 fill:#E0F2FE,stroke:#0284C7,stroke-width:2px,color:#0C4A6E;
+
+    TF[Terraform Configuration] --> Foundation[1. Foundation Layer<br>Long-lived Resources]
+    TF --> Application[2. Application Layer<br>Disposable Resources]
+
+    subgraph FoundRes [Persistent Resources]
+        Foundation --> ECR[Amazon ECR]
+        Foundation --> BaseDB[RDS Network & Groups]
+        Foundation --> SecGroup[Shared Security Groups]
+    end
+
+    subgraph AppRes [Compute & Traffic]
+        Application --> AppECS[ECS Cluster & Services]
+        Application --> AppALB[ALB & Listeners]
+        Application --> TG[Target Groups]
+    end
+
+    class TF base;
+    class Foundation,ECR,BaseDB,SecGroup layer1;
+    class Application,AppECS,AppALB,TG layer2;
+```
 Terraform infrastructure is intentionally separated into two independent states:
 ### 1. Foundation
 Contains long-lived and inexpensive resources that are expected to survive application shutdowns:
