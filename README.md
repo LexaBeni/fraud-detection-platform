@@ -36,7 +36,7 @@ graph TD
     classDef app fill:#DBEAFE,stroke:#2563EB,stroke-width:2px,color:#1E3A8A;
     classDef data fill:#FCE7F3,stroke:#DB2777,stroke-width:2px,color:#831843;
 
-    User([User / Client]) --> |HTTPS| ALB[AWS ALB]
+    User([User / Client]) --> |HTTP| ALB[AWS ALB]
 
     subgraph ECS [AWS ECS Fargate Layer]
         ALB --> Streamlit[Streamlit Dashboard]
@@ -104,3 +104,46 @@ While persistent resources such as the database and container repositories remai
 cd terraform/application
 terraform apply
 ```
+# **Machine Learning**
+The fraud detection model is trained on the **IEEE-CIS Fraud Detection** dataset, combining transaction-level and identity information.
+# **ML Pipeline**
+The machine learning workflow consists of:
+1. Data loading and merging of transaction and identity datasets
+2. Exploratory data analysis
+3. Data preprocessing and missing-value handling
+4. Custom feature engineering
+5. Temporal train/validation/test splitting
+6. Feature selection
+7. Creating custom ColumnTransformer
+8. Models training (LightGBM, XGBoost, and CatBoost)
+9. Champion model selection (LightGBM)
+10. Hyperparameter tuning
+11. Validation-based decision threshold optimization
+12. Final model training on the combined training and validation data
+13. Evaluation on a separate temporal test set
+14. Model logging and tracking with MLflow
+A temporal split is used instead of a random split to better reflect a real fraud detection scenario, where a model is trained on historical transactions and evaluated on future transactions.
+
+# **Model**
+The final classifier is based on LightGBM, a gradient boosting framework well suited for tabular data.
+
+Because fraud detection is an imbalanced classification problem, model evaluation focuses on metrics beyond accuracy, particularly PR-AUC, ROC-AUC, precision, recall, and F1-score.
+
+The prediction threshold is optimized on the validation set instead of relying exclusively on the default 0.5 threshold. This allows the system to balance precision and recall according to the requirements of fraud detection.
+# Validation Performance
+| **Metric** | | **Validation** |
+| :---| | :---|
+| **PR-AUC** | | ~0.412 |
+| **ROC-AUC** | | ~0.893 |
+| **Precision** | | ~0.451 |
+| **Recall** | | ~0.425 |
+| **F1-score** | | ~0.438 |
+The optimized classification threshold was 0.18.
+## Test Performance
+The final model was retrained using the training and validation data and evaluated on the held-out temporal test set.
+| **Metric** | | **Validation** |
+| :---| | :---|
+| **PR-AUC**  | | ~0.345 |
+| **ROC-AUC** | | ~0.866 |
+The difference between validation and test performance reflects the difficulty of generalizing fraud detection models to later, previously unseen transactions.
+
