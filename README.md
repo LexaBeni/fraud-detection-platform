@@ -131,13 +131,14 @@ Because fraud detection is an imbalanced classification problem, model evaluatio
 
 The prediction threshold is optimized on the validation set instead of relying exclusively on the default 0.5 threshold. This allows the system to balance precision and recall according to the requirements of fraud detection.
 # Validation Performance
-| **Metric** | | **Validation** |
-| :---| :---|
+| **Metric** | **Validation** |
+| :--- | :---|
 | **PR-AUC** | ~0.412 |
 | **ROC-AUC** | ~0.893 |
 | **Precision** | ~0.451 |
 | **Recall** | ~0.425 |
 | **F1-score** | ~0.438 |
+
 The optimized classification threshold was 0.18.
 ## Test Performance
 The final model was retrained using the training and validation data and evaluated on the held-out temporal test set.
@@ -145,5 +146,6 @@ The final model was retrained using the training and validation data and evaluat
 | :---| :--- |
 | **PR-AUC** | ~0.345 |
 | **ROC-AUC** | ~0.866 |
+
 The difference between validation and test performance reflects the difficulty of generalizing fraud detection models to later, previously unseen transactions.
 
