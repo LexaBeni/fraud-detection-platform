@@ -1,237 +1,228 @@
-# **Fraud Detection Platform**
-An end-to-end machine learning platform for detecting fraudulent online transactions.
-The project combines a machine learning pipeline with a production-oriented backend, database, web interface, containerized deployment, CI/CD, and AWS infrastructure managed with Terraform.
+# Fraud Detection Platform
 
-## **Features**
-* **Machine Learning:** Fraud detection using a LightGBM classification model with custom feature engineering for transaction and identity data, plus validation-based decision threshold optimization.
-* **MLOps:** MLflow experiments and model tracking.
-* **Backend:** REST API built with FastAPI, JWT-based authentication/authorization, and MySQL database for users and prediction history.
-* **Frontend:** Interactive Streamlit frontend.
-* **DevOps & CI/CD:** Dockerized applications, automated testing with `pytest`, code quality checks with `Ruff`, and CI/CD via GitHub Actions.
-* **Cloud Infrastructure:** AWS deployment using ECS Fargate, AWS RDS for MySQL, Amazon ECR, Application Load Balancer, and infrastructure managed via separate Terraform foundation and application stacks.
+A lightweight end-to-end fraud detection project that combines a machine learning pipeline, FastAPI backend, Streamlit interface, MySQL persistence, and AWS deployment setup.
 
-## **Technology Stack**
-| Area | Technologies |
-| :--- | :--- |
-| **Machine Learning** | Python, Pandas, NumPy, LightGBM, scikit-learn |
-| **Experiment Tracking** | MLflow |
-| **Backend** | FastAPI, Pydantic, SQLAlchemy |
-| **Authentication** | JWT |
-| **Database** | MySQL, AWS RDS, Alembic |
-| **Frontend** | Streamlit |
-| **Testing** | pytest |
-| **Code Quality** | Ruff |
-| **Containers** | Docker |
-| **CI/CD** | GitHub Actions |
-| **Cloud** | AWS ECS Fargate, ECR, RDS, ALB, SSM |
-| **Infrastructure as Code** | Terraform |
+## Overview
 
-## **Architecture**
-The platform consists of a machine learning model, backend API, database, frontend, and AWS infrastructure managed by Terraform.
+This project is designed to demonstrate the full workflow of a fraud detection system:
+
+- data preparation and feature engineering
+- model training and threshold optimization
+- REST API serving and authentication
+- web dashboard for interaction
+- Dockerized local deployment
+- Terraform-based AWS infrastructure
+
+## Features
+
+- Machine learning pipeline with LightGBM and temporal train/validation/test splits
+- Feature engineering for transaction and identity data
+- Validation-based decision threshold optimization
+- FastAPI backend with JWT authentication
+- MySQL-backed user and prediction history storage
+- Streamlit frontend for model interaction
+- Docker-based local setup
+- MLflow experiment tracking
+- Terraform deployment setup for AWS
+
+## Architecture
 
 ```mermaid
 graph TD
-    %% Custom styling for contrast and text visibility
-    classDef client fill:#E5E7EB,stroke:#374151,stroke-width:2px,color:#111827;
-    classDef app fill:#DBEAFE,stroke:#2563EB,stroke-width:2px,color:#1E3A8A;
-    classDef data fill:#FCE7F3,stroke:#DB2777,stroke-width:2px,color:#831843;
-
-    User([User / Client]) --> |HTTP| ALB[AWS ALB]
-
-    subgraph ECS [AWS ECS Fargate Layer]
-        ALB --> Streamlit[Streamlit Dashboard]
-        Streamlit -->|API Requests| FastAPI[FastAPI Backend]
-        FastAPI -->|Runs Inference| LightXGB[LightGBM Model]
-    end
-
-    FastAPI -->|Read/Write & Migrations| RDS[(AWS RDS MySQL)]
-
-    %% Apply visibility styles
-    class User client;
-    class ALB,Streamlit,FastAPI app;
-    class LightXGB,RDS data;
+    User[User] -->|HTTP| Streamlit[Streamlit App]
+    Streamlit -->|API requests| FastAPI[FastAPI API]
+    FastAPI -->|Inference| Model[LightGBM Model]
+    FastAPI -->|Reads/Writes| DB[(MySQL)]
 ```
 
-### **Terraform Architecture**:
+The main components are:
 
-```mermaid
-graph LR
-    %% Custom styling for contrast
-    classDef base fill:#F3F4F6,stroke:#4B5563,stroke-width:2px,color:#1F2937;
-    classDef layer1 fill:#FEF3C7,stroke:#D97706,stroke-width:2px,color:#78350F;
-    classDef layer2 fill:#E0F2FE,stroke:#0284C7,stroke-width:2px,color:#0C4A6E;
+- Streamlit app for user interaction
+- FastAPI backend for authentication and prediction endpoints
+- LightGBM model for inference
+- MySQL database for storing users and prediction records
+- Terraform for AWS infrastructure provisioning
 
-    TF[Terraform Configuration] --> Foundation[1. Foundation Layer<br>Long-lived Resources]
-    TF --> Application[2. Application Layer<br>Disposable Resources]
+## Tech Stack
 
-    subgraph FoundRes [Persistent Resources]
-        Foundation --> ECR[Amazon ECR]
-        Foundation --> BaseDB[RDS Network & Groups]
-        Foundation --> SecGroup[Shared Security Groups]
-    end
+- Python
+- Pandas, NumPy, scikit-learn, LightGBM
+- FastAPI, Pydantic, SQLAlchemy
+- MySQL, Alembic
+- Streamlit
+- MLflow
+- Docker, Docker Compose
+- pytest, Ruff
+- Terraform
 
-    subgraph AppRes [Compute & Traffic]
-        Application --> AppECS[ECS Cluster & Services]
-        Application --> AppALB[ALB & Listeners]
-        Application --> TG[Target Groups]
-    end
+## Quick Start
 
-    class TF base;
-    class Foundation,ECR,BaseDB,SecGroup layer1;
-    class Application,AppECS,AppALB,TG layer2;
-```
-Terraform infrastructure is intentionally separated into two independent states:
-### 1. Foundation
-Contains long-lived and inexpensive resources that are expected to survive application shutdowns:
-* Amazon ECR repositories
-* RDS-related resources
-* Shared security groups and networking dependencies
-### 2. Application
-Contains the main resources that can be safely destroyed when the application is not needed:
-* ECS cluster and services
-* ECS task definitions
-* Application Load Balancer
-* Target groups
-* ALB listeners
-* Application security groups
-This separation allows the application infrastructure to be safely destroyed when it is not needed:
-```bash
-cd terraform/application
-terraform destroy
-```
-Persistent resources such as the database and container repositories remain available. The application infrastructure can later be recreated with:
-```bash
-cd terraform/application
-terraform apply
-```
-## **Machine Learning**
-The fraud detection model is trained on the **IEEE-CIS Fraud Detection** dataset, combining transaction-level and identity information.
-### **ML Pipeline**
-The machine learning workflow consists of:
-1. Data loading and merging of transaction and identity datasets
-2. Exploratory data analysis
-3. Data preprocessing and missing-value handling
-4. Custom feature engineering
-5. Temporal train/validation/test splitting
-6. Feature selection
-7. Model training
-8. Hyperparameter tuning
-9. Validation-based decision threshold optimization
-10. Final model training on the combined training and validation data
-11. Evaluation on a separate temporal test set
-12. Model logging and tracking with MLflow
-A temporal split is used instead of a random split to better reflect a real fraud detection scenario, where a model is trained on historical transactions and evaluated on future transactions.
-
-### **Model**
-The final classifier is based on LightGBM, a gradient boosting framework well suited for tabular data.
-
-Because fraud detection is an imbalanced classification problem, model evaluation focuses on metrics beyond accuracy, particularly PR-AUC, ROC-AUC, precision, recall, and F1-score.
-
-The prediction threshold is optimized on the validation set instead of relying exclusively on the default 0.5 threshold. This allows the system to balance precision and recall according to the requirements of fraud detection.
-### Validation Performance
-| **Metric** | **Validation** |
-| :--- | :---|
-| **PR-AUC** | ~0.412 |
-| **ROC-AUC** | ~0.893 |
-| **Precision** | ~0.451 |
-| **Recall** | ~0.425 |
-| **F1-score** | ~0.438 |
-
-The optimized classification threshold was 0.18.
-### Test Performance
-The final model was retrained using the training and validation data and evaluated on the held-out temporal test set.
-| **Metric**  | **Test** |
-| :---| :--- |
-| **PR-AUC** | ~0.345 |
-| **ROC-AUC** | ~0.866 |
-
-The difference between validation and test performance reflects the difficulty of generalizing fraud detection models to later, previously unseen transactions.
-
-## **Getting Started**
 ### Prerequisites
-The following tools are required for local development:
-* Python 3.13+
-* Docker and Docker Compose
-* Git
-Clone the repository:
+
+- Python 3.13+
+- Docker and Docker Compose
+- Git
+
+### 1) Clone the repository
+
 ```bash
 git clone <repository-url>
-cd <repository-directory>
+cd fraud_detection
 ```
-**Run with Docker Compose**
-The easiest way to run the complete application locally is Docker Compose.
-Start the services:
+
+### 2) Configure environment variables
+
+Create a `.env` file in the project root and set the required values. Example:
+
+```env
+MODEL_PATH=models/fraud_detection_model.joblib
+DATABASE_URL=mysql+pymysql://root:your_password@localhost:3308/fraud_detection
+TEST_DATABASE_URL=mysql+pymysql://root:your_password@localhost:3308/test_fraud_detection
+ADMIN_EMAIL=admin@example.com
+ADMIN_PASSWORD=your_password
+JWT_SECRET_KEY=your_secret_key
+JWT_ALGORITHM=HS256
+ACCESS_TOKEN_EXPIRES_MINUTES=15
+REFRESH_TOKEN_EXPIRES_DAYS=7
+MYSQL_DATABASE=fraud_detection
+MYSQL_USER=fraud_api
+MYSQL_PASSWORD=your_mysql_password
+MYSQL_ROOT_PASSWORD=your_root_password
+API_URL=http://fastapi:8000
+```
+
+> Adjust the database values to match your local or Docker setup. The app expects a valid database connection at startup.
+
+### 3) Run with Docker Compose
+
 ```bash
 docker compose up --build
 ```
-This starts
-* MySQL database
-* Database migrations
-* FastAPI backend
-* Streamlit frontend
-The application consists of:
 
-| **Service** | **Local address** |
-| :--- | :--- |
-| **FastAPI API** | http://localhost:8000 |
-| **FastAPI Docs** | http://localhost:8000/docs |
-| **Streamlit** | http://localhost:8501 |
-| **MySQL** | localhost:3306 (or 127.0.0.1:3306) |
+This starts:
 
-The database schema is initialized through **Alembic migrations**.
-To stop the application:
+- MySQL database
+- Alembic migrations
+- FastAPI API
+- Streamlit app
+
+Available endpoints:
+
+| Service | URL |
+| --- | --- |
+| API | http://localhost:8000 |
+| Swagger Docs | http://localhost:8000/docs |
+| Streamlit | http://localhost:8501 |
+
+To stop the services:
+
 ```bash
 docker compose down
 ```
-To remove the database volume as well:
+
+To remove the database volume too:
+
 ```bash
 docker compose down -v
 ```
-## **Database Migrations**
 
-Database schema changes are managed using Alembic.
+## Local Development
 
-Apply the latest migrations with:
+If you want to run the backend and frontend outside Docker:
+
+```bash
+uvicorn src.api.main:app --reload
+streamlit run streamlit_app/app.py
+```
+
+## Database Migrations
+
+The database schema is managed with Alembic:
 
 ```bash
 alembic upgrade head
 ```
-## Model Artifact
-The trained LightGBM model is stored as a serialized model artifact and loaded by the FastAPI application during startup.
 
-The API does not require an MLflow server to perform inference. MLflow is used for experiment tracking and model development rather than as a runtime dependency of the prediction API.
+## Model
 
-## **Testing & Code Quality**
+The project uses a LightGBM classifier trained on the IEEE-CIS fraud dataset. The workflow includes:
 
-The project uses `pytest` for automated testing and `Ruff` for linting and code quality checks.
+1. data loading and merging
+2. feature engineering
+3. validation-based threshold optimization
+4. model evaluation
+5. final model artifact creation
+
+The trained model is stored in the `models/` directory and is loaded by the FastAPI application at startup.
+
+## Validation Highlights
+
+| Metric | Validation |
+| --- | --- |
+| PR-AUC | ~0.412 |
+| ROC-AUC | ~0.893 |
+| Precision | ~0.451 |
+| Recall | ~0.425 |
+| F1-score | ~0.438 |
+
+The optimized threshold for the final classifier was around `0.18`.
+
+## Testing and Quality Checks
 
 Run the test suite:
 
 ```bash
 pytest
 ```
-Run Ruff:
-```
+
+Run linting:
+
+```bash
 ruff check .
 ```
-The current test architecture covers authentication, authorization, prediction endpoints, API behavior, and application services.
 
-## **Project Structure**
+## Project Structure
 
 ```text
-fraud-detection/
-├── .github/workflows/          # GitHub Actions CI/CD
-├── alembic/                    # Database migrations configuration and history
-├── models/                     # Saved LightGBM model
-├── notebooks/                  # Jupyter notebooks for data analysis & ML training
-├── scripts/                    # Helper scripts
-├── src/                        # FastAPI core backend application source code
-├── streamlit_app/              # Streamlit web dashboard source code
-├── terraform/                  # Infrastructure as Code (Foundation & Application layers)
-├── Dockerfile                  # Production container recipe for FastAPI backend
-├── Dockerfile.streamlit        # Production container recipe for Streamlit dashboard
-├── alembic.ini                 # Configuration file for Alembic migrations
-├── docker-compose.yml          # Local multi-container orchestration config
-├── pyproject.toml              # Project configuration (Ruff, pytest, linting)
-└── requirements.txt            # Main Python dependencies
+fraud_detection/
+├── alembic/                 # Database migrations
+├── models/                  # Trained model artifacts
+├── notebooks/               # ML exploration and training notebooks
+├── scripts/                 # Utility scripts
+├── src/                     # Backend source code
+├── streamlit_app/           # Streamlit frontend
+├── terraform/               # AWS infrastructure files
+├── .env                     # Local environment variables
+├── Dockerfile               # FastAPI container
+├── Dockerfile.streamlit     # Streamlit container
+├── docker-compose.yml       # Local service orchestration
+├── pyproject.toml           # Project config and tooling
+├── requirements.txt         # Python dependencies
+├── README.md                # Project documentation
+└── alembic.ini              # Alembic config
 ```
+
+## Notes
+
+- MLflow is used for experiment tracking and model development.
+- The API does not require a live MLflow server at inference time.
+- This project is built around a real-world fraud detection problem and uses a temporal split to better reflect production conditions.
+
+## Deployment
+
+The repository includes Terraform configuration for AWS infrastructure, including application and foundation layers for ECS, ALB, ECR, and RDS resources.
+
+The application infrastructure can be destroyed independently from the long-lived resources when needed:
+
+```bash
+cd terraform/application
+terraform destroy
+```
+
+And recreated later with:
+
+```bash
+cd terraform/application
+terraform apply
+```
+
