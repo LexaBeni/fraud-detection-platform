@@ -149,3 +149,41 @@ The final model was retrained using the training and validation data and evaluat
 
 The difference between validation and test performance reflects the difficulty of generalizing fraud detection models to later, previously unseen transactions.
 
+## **Getting Started**
+### Prerequisites
+The following tools are required for local development:
+* Python 3.13+
+* Docker and Docker Compose
+* Git
+Clone the repository:
+```bash
+git clone <repository-url>
+cd <repository-directory>
+```
+**Run with Docker Compose**
+The easiest way to run the complete application locally is Docker Compose.
+Start the services:
+```bash
+docker compose up --build
+```
+This starts
+* MySQL database
+* Database migrations
+* FastAPI backend
+* Streamlit frontend
+The application consists of:
+| **Service** | **Local address** |
+| :--- | :--- |
+| **FastAPI API** | http://localhost:8000 |
+| **FastAPI Docs** | http://localhost:8000/docs |
+| **Streamlit** | | http://localhost:8501 |
+| **MySQL** | | localhost:3306 |
+The database schema is initialized through **Alembic migrations**.
+To stop the application:
+```bash
+docker compose down
+```
+To remove the database volume as well:
+```bash
+docker compose down -v
+```
